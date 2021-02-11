@@ -3,7 +3,7 @@
         <div
             class="tabs-container fixedToTop"
             ref="fixedTabs"
-            v-show="content.fixedToTop && this.tabsNumber"
+            v-if="content.fixedToTop && this.tabsNumber"
             :class="content.tabsPosition"
             :style="cssTabsFixedPosition"
         >
