@@ -177,6 +177,9 @@ export default {
     justify-content: center;
     overflow: visible;
 
+    &.top {
+        flex-direction: column;
+    }
     &.bottom {
         flex-direction: column-reverse;
     }
