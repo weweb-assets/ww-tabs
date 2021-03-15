@@ -86,6 +86,8 @@ export default {
         fixedToTop: false,
         leftRightPosition: '30%',
         topBottomPosition: '-50%',
+
+        tabsToEdit: '1',
     },
     /* wwEditor:start */
     wwEditorConfiguration({ content }) {
@@ -102,6 +104,9 @@ export default {
     watch: {
         'content.numberOfTabs'() {
             this.tabsNumber = parseInt(this.content.numberOfTabs);
+        },
+        'content.tabsToEdit'() {
+            this.changeTab(this.content.tabsToEdit);
         },
     },
     computed: {
