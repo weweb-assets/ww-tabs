@@ -135,7 +135,23 @@ const FIXED_TABS_OPTIONS = {
 };
 
 export const getSettingsConfigurations = content => {
+    const options = [];
+
+    for (let i = 1; i <= content.numberOfTabs; i++) {
+        const tabs = i.toString();
+        options.push({ value: tabs, label: { en: tabs, fr: tabs } });
+    }
+
+    const tabsToEdit = {
+        label: { en: 'Tabs to edit', fr: 'Tabs to edit' },
+        type: 'TextSelect',
+        options: {
+            options: options,
+        },
+        path: 'tabsToEdit',
+    };
+
     return content.fixedToTop
-        ? { settingsOptions: { ...FIXED_TABS_OPTIONS } }
-        : { settingsOptions: { ...COMMON_TABS_OPTIONS } };
+        ? { settingsOptions: { ...FIXED_TABS_OPTIONS, tabsToEdit: tabsToEdit } }
+        : { settingsOptions: { ...COMMON_TABS_OPTIONS, tabsToEdit: tabsToEdit } };
 };
