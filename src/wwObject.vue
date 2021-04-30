@@ -3,11 +3,16 @@
         <div
             class="tabs-container fixedToTop"
             ref="fixedTabs"
-            v-if="content.fixedToTop && this.tabsNumber"
+            v-if="content.fixedToTop && content.tabFields.items"
             :class="content.tabsPosition"
             :style="cssTabsFixedPosition"
         >
-            <div class="layout-container" v-for="index in this.tabsNumber" :key="index" @click="changeTab(index)">
+            <div
+                class="layout-container"
+                v-for="(field, index) in content.tabFields.items"
+                :key="index"
+                @click="changeTab(index)"
+            >
                 <div class="layout-sublayout">
                     <wwLayout
                         class="layout -layout"
@@ -28,8 +33,13 @@
             </div>
         </div>
 
-        <div class="tabs-container" :class="content.tabsPosition" v-if="this.tabsNumber && !content.fixedToTop">
-            <div class="layout-container" v-for="index in this.tabsNumber" :key="index" @click="changeTab(index)">
+        <div class="tabs-container" :class="content.tabsPosition" v-if="content.tabsList && !content.fixedToTop">
+            <div
+                class="layout-container"
+                v-for="(field, index) in content.tabFields.items"
+                :key="index"
+                @click="changeTab(index)"
+            >
                 <div class="layout-sublayout">
                     <wwLayout
                         class="layout -layout"
@@ -74,12 +84,10 @@ export default {
         /* wwEditor:end */
     },
     wwDefaultContent: {
-        numberOfTabs: '3',
         tabsPosition: 'top',
         transition: 'fade',
         transitionDuration: 0.5,
         order: null,
-
         tabsContent: [],
         tabsList: [],
         subTabLayouts: [],
@@ -88,6 +96,20 @@ export default {
         topBottomPosition: '-50%',
 
         tabsToEdit: '1',
+        tabFields: {
+            items: [
+                {
+                    checked: true,
+                },
+                {
+                    checked: false,
+                },
+                {
+                    checked: false,
+                },
+            ],
+            target: null,
+        },
     },
     /* wwEditor:start */
     wwEditorConfiguration({ content }) {
@@ -97,16 +119,28 @@ export default {
     data() {
         return {
             currentTabIndex: 1,
-            tabsNumber: 3,
             activeTransition: 'fade',
         };
     },
     watch: {
-        'content.numberOfTabs'() {
-            this.tabsNumber = parseInt(this.content.numberOfTabs);
-        },
-        'content.tabsToEdit'() {
-            this.changeTab(this.content.tabsToEdit);
+        'content.tabFields'() {
+            if (this.content.tabFields.target) {
+                const tabsList = [...this.content.tabsList];
+                const subTabLayouts = [...this.content.subTabLayouts];
+                const tabsContent = [...this.content.tabsContent];
+                tabsList.splice(this.content.tabFields.target, 1);
+                subTabLayouts.splice(this.content.tabFields.target, 1);
+                tabsContent.splice(this.content.tabFields.target, 1);
+
+                this.$emit('update', {
+                    tabsList: tabsList,
+                    subTabLayouts: subTabLayouts,
+                    tabsContent: tabsContent,
+                    tabFields: { ...this.content.tabFields, target: null },
+                });
+            }
+            this.currentTabIndex = this.content.tabFields.items.findIndex(item => item.checked);
+            this.changeTab(this.currentTabIndex);
         },
     },
     computed: {
@@ -139,6 +173,7 @@ export default {
     },
     methods: {
         changeTab(index) {
+            if (index < 0) return;
             this.order = index > this.currentTabIndex ? 'after' : 'before';
             this.handleTransition(this.order);
             this.currentTabIndex = index;
@@ -161,9 +196,6 @@ export default {
                     this.activeTransition = 'fade';
             }
         },
-    },
-    mounted() {
-        if (this.content.numberOfTabs) this.tabsNumber = parseInt(this.content.numberOfTabs);
     },
 };
 </script>
@@ -199,9 +231,6 @@ export default {
         .layout {
             flex-direction: column;
             min-width: 200px;
-            &.isEditing {
-                border: 1px dashed var(--ww-color-dark-500);
-            }
         }
     }
 
@@ -256,10 +285,6 @@ export default {
                     height: fit-content;
                     min-width: 80px;
 
-                    &.isEditing {
-                        border: 1px dashed var(--ww-color-dark-500);
-                    }
-
                     &:hover {
                         cursor: pointer;
                     }
@@ -267,10 +292,6 @@ export default {
 
                 .sublayout {
                     flex-direction: column;
-
-                    &.isEditing {
-                        border: 1px dashed var(--ww-color-dark-500);
-                    }
                 }
             }
         }
@@ -278,7 +299,6 @@ export default {
         .tab-dropzone-container {
             width: 100%;
             height: 100%;
-            border: 1px solid lightgray;
             padding: 10px 10px;
 
             .tab_dropzone {
