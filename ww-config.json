@@ -5,6 +5,15 @@
         "label": {
             "en": "Tabs",
             "fr": "Onglets"
+        },
+        "menuOptions": {
+            "quick": {
+                "label": {
+                    "en": "Edit tabs",
+                    "fr": "Edit tabs"
+                },
+                "sections": ["position", "tabFields"]
+            }
         }
     }
 }

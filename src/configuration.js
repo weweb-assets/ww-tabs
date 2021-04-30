@@ -1,23 +1,4 @@
 const COMMON_TABS_OPTIONS = {
-    tabs: {
-        label: { en: 'Number of tabs', fr: 'Nombre de tabs' },
-        type: 'TextSelect',
-        options: {
-            options: [
-                { value: '1', label: { en: '1', fr: '1' } },
-                { value: '2', label: { en: '2', fr: '2' } },
-                { value: '3', label: { en: '3', fr: '3' } },
-                { value: '4', label: { en: '4', fr: '4' } },
-                { value: '5', label: { en: '5', fr: '5' } },
-                { value: '6', label: { en: '6', fr: '6' } },
-                { value: '7', label: { en: '7', fr: '7' } },
-                { value: '8', label: { en: '8', fr: '8' } },
-                { value: '9', label: { en: '9', fr: '9' } },
-                { value: '10', label: { en: '10', fr: '10' } },
-            ],
-        },
-        path: 'numberOfTabs',
-    },
     position: {
         label: {
             en: 'Tabs position',
@@ -135,23 +116,14 @@ const FIXED_TABS_OPTIONS = {
 };
 
 export const getSettingsConfigurations = content => {
-    const options = [];
-
-    for (let i = 1; i <= content.numberOfTabs; i++) {
-        const tabs = i.toString();
-        options.push({ value: tabs, label: { en: tabs, fr: tabs } });
-    }
-
-    const tabsToEdit = {
-        label: { en: 'Tabs to edit', fr: 'Tabs to edit' },
-        type: 'TextSelect',
-        options: {
-            options: options,
-        },
-        path: 'tabsToEdit',
+    const tabFields = {
+        path: 'tabFields',
+        label: { en: 'Tabs', fr: 'Tabs' },
+        type: 'Tabs',
+        itemsLabel: 'Tab',
     };
 
     return content.fixedToTop
-        ? { settingsOptions: { ...FIXED_TABS_OPTIONS, tabsToEdit: tabsToEdit } }
-        : { settingsOptions: { ...COMMON_TABS_OPTIONS, tabsToEdit: tabsToEdit } };
+        ? { settingsOptions: { ...FIXED_TABS_OPTIONS, tabFields } }
+        : { settingsOptions: { ...COMMON_TABS_OPTIONS, tabFields } };
 };
