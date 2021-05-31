@@ -95,20 +95,23 @@ export default {
         leftRightPosition: '30%',
         topBottomPosition: '-50%',
 
-        tabsToEdit: '1',
         tabFields: {
             items: [
                 {
                     checked: true,
+                    index: 0,
                 },
                 {
                     checked: false,
+                    index: 1,
                 },
                 {
                     checked: false,
+                    index: 2,
                 },
             ],
             target: null,
+            moveHandler: [null, null],
         },
     },
     /* wwEditor:start */
@@ -124,6 +127,40 @@ export default {
     },
     watch: {
         'content.tabFields'() {
+            if (this.content.tabFields.moveHandler[0] !== null && this.content.tabFields.moveHandler[1] !== null) {
+                const tabsList = [...this.content.tabsList] || [];
+                const subTabLayouts = [...this.content.subTabLayouts] || [];
+                const tabsContent = [...this.content.tabsContent] || [];
+
+                this.moveInArray(
+                    tabsList,
+                    this.content.tabFields.moveHandler[0],
+                    this.content.tabFields.moveHandler[1]
+                );
+                this.moveInArray(
+                    subTabLayouts,
+                    this.content.tabFields.moveHandler[0],
+                    this.content.tabFields.moveHandler[1]
+                );
+                this.moveInArray(
+                    tabsContent,
+                    this.content.tabFields.moveHandler[0],
+                    this.content.tabFields.moveHandler[1]
+                );
+                const tabFields = {
+                    items: [...this.content.tabFields.items],
+                    target: this.content.tabFields.target,
+                    moveHandler: [null, null],
+                };
+
+                this.$emit('update', {
+                    tabFields: tabFields,
+                    tabsList: tabsList,
+                    subTabLayouts: subTabLayouts,
+                    tabsContent: tabsContent,
+                });
+            }
+
             if (this.content.tabFields.target) {
                 const tabsList = [...this.content.tabsList];
                 const subTabLayouts = [...this.content.subTabLayouts];
@@ -195,6 +232,22 @@ export default {
                 default:
                     this.activeTransition = 'fade';
             }
+        },
+        moveInArray(arr, old_index, new_index) {
+            while (old_index < 0) {
+                old_index += arr.length;
+            }
+            while (new_index < 0) {
+                new_index += arr.length;
+            }
+            if (new_index >= arr.length) {
+                let k = new_index - arr.length;
+                while (k-- + 1) {
+                    arr.push(undefined);
+                }
+            }
+            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+            return arr;
         },
     },
 };
