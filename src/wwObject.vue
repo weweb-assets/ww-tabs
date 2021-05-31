@@ -14,21 +14,16 @@
                 @click="changeTab(index)"
             >
                 <div class="layout-sublayout">
-                    <wwLayout
-                        class="layout -layout"
-                        :class="{ isEditing: isEditing }"
-                        :path="`tabsList[${index}]`"
-                    ></wwLayout>
-                    <transition name="fade" mode="out-in">
-                        <wwLayout
-                            v-if="currentTabIndex === index || isEditing"
-                            class="sublayout -layout"
-                            :class="{ isEditing: isEditing }"
-                            :path="`subTabLayouts[${currentTabIndex}]`"
-                        >
-                        </wwLayout>
-                        <div v-else :style="{ minHeight: getSublayoutHeight }"></div>
-                    </transition>
+                    <wwLayout class="layout -layout" :path="`tabsList[${index + 1}]`">
+                        <template v-slot="{ item }">
+                            <wwLayoutItem>
+                                <wwObject
+                                    v-bind="item"
+                                    :states="index === currentTabIndex ? ['active'] : []"
+                                ></wwObject>
+                            </wwLayoutItem>
+                        </template>
+                    </wwLayout>
                 </div>
             </div>
         </div>
@@ -41,21 +36,15 @@
                 @click="changeTab(index)"
             >
                 <div class="layout-sublayout">
-                    <wwLayout
-                        class="layout -layout"
-                        :class="{ isEditing: isEditing }"
-                        :path="`tabsList[${index}]`"
+                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`"
+                        ><template v-slot="{ item }">
+                            <wwLayoutItem>
+                                <wwObject
+                                    v-bind="item"
+                                    :states="index === currentTabIndex ? ['active'] : []"
+                                ></wwObject>
+                            </wwLayoutItem> </template
                     ></wwLayout>
-                    <transition name="fade" mode="out-in">
-                        <wwLayout
-                            v-if="currentTabIndex === index || isEditing"
-                            class="sublayout -layout tabs-sublayout-container"
-                            :class="{ isEditing: isEditing }"
-                            :path="`subTabLayouts[${index}]`"
-                        >
-                        </wwLayout>
-                        <div v-else :style="{ minHeight: getSublayoutHeight }"></div>
-                    </transition>
                 </div>
             </div>
         </div>
