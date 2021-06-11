@@ -6,29 +6,29 @@ const TABS_SETTINGS_OPTIONS = () => {
             type: 'Tabs',
             itemsLabel: 'Tab',
         },
-        transition: {
-            label: { en: 'Transition', fr: 'Transition' },
-            type: 'TextSelect',
-            options: {
-                options: [
-                    { value: 'none', label: { en: 'None', fr: 'Aucune' } },
-                    { value: 'fade', label: { en: 'Fade', fr: 'Fade' } },
-                    { value: 'fadeTopBottom', label: { en: 'Fade top / bottom', fr: 'Fade top / bottom' } },
-                    { value: 'fadeLeftRight', label: { en: 'Fade right / left', fr: 'Fade right / left' } },
-                ],
-            },
-            path: 'transition',
-        },
-        transitionDuration: {
-            type: 'Number',
-            label: { en: 'Transition duration', fr: 'Durée de la transition' },
-            options: {
-                min: 0,
-                max: 5,
-                step: 0.1,
-            },
-            path: 'transitionDuration',
-        },
+        // transition: {
+        //     label: { en: 'Transition', fr: 'Transition' },
+        //     type: 'TextSelect',
+        //     options: {
+        //         options: [
+        //             { value: 'none', label: { en: 'None', fr: 'Aucune' } },
+        //             { value: 'fade', label: { en: 'Fade', fr: 'Fade' } },
+        //             { value: 'fadeTopBottom', label: { en: 'Fade top / bottom', fr: 'Fade top / bottom' } },
+        //             { value: 'fadeLeftRight', label: { en: 'Fade right / left', fr: 'Fade right / left' } },
+        //         ],
+        //     },
+        //     path: 'transition',
+        // },
+        // transitionDuration: {
+        //     type: 'Number',
+        //     label: { en: 'Transition duration', fr: 'Durée de la transition' },
+        //     options: {
+        //         min: 0,
+        //         max: 5,
+        //         step: 0.1,
+        //     },
+        //     path: 'transitionDuration',
+        // },
     };
 };
 
