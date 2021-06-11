@@ -14,7 +14,7 @@
                 @click="changeTab(index)"
             >
                 <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index + 1}]`">
+                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
                         <template v-slot="{ item }">
                             <wwLayoutItem>
                                 <wwObject
@@ -49,16 +49,23 @@
             </div>
         </div>
 
-        <transition :name="activeTransition" mode="out-in">
-            <div class="tabs-content" :key="currentTabIndex">
+        <transition-group :name="activeTransition" mode="out-in">
+            <div v-for="(field, index) in content.tabFields.items" :key="index">
+                <div class="tab-content" v-if="currentTabIndex === index">
+                    <wwLayout class="layout -layout" :class="{ isEditing: isEditing }" :path="`tabsContent[${index}]`">
+                    </wwLayout>
+                </div>
+            </div>
+        </transition-group>
+
+        <!-- <div class="tabs-content" :key="currentTabIndex">
                 <wwLayout
                     class="layout -layout"
                     :class="{ isEditing: isEditing }"
                     :path="`tabsContent[${currentTabIndex}]`"
                 >
                 </wwLayout>
-            </div>
-        </transition>
+            </div> -->
     </div>
 </template>
 
@@ -83,6 +90,7 @@ export default {
         fixedToTop: false,
         leftRightPosition: '30%',
         topBottomPosition: '-50%',
+        activeTransition: 'fade',
 
         tabFields: {
             items: [
@@ -110,7 +118,7 @@ export default {
     /* wwEditor:end */
     data() {
         return {
-            currentTabIndex: 1,
+            currentTabIndex: 0,
             activeTransition: 'fade',
         };
     },
@@ -203,6 +211,7 @@ export default {
             this.order = index > this.currentTabIndex ? 'after' : 'before';
             this.handleTransition(this.order);
             this.currentTabIndex = index;
+            console.log(this.currentTabIndex);
         },
         handleTransition(order) {
             switch (this.content.transition) {
@@ -269,7 +278,7 @@ export default {
         flex-direction: row-reverse;
     }
 
-    .tabs-content {
+    .tab-content {
         .layout {
             flex-direction: column;
             min-width: 200px;
