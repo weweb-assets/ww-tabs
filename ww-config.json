@@ -1,5 +1,5 @@
 {
-    "componentPath": "./src/wwObject.vue",
+    "componentPath": "./src/wwElement.vue",
 
     "editor": {
         "label": {
@@ -12,7 +12,7 @@
                     "en": "Edit tabs",
                     "fr": "Edit tabs"
                 },
-                "sections": ["position", "tabFields"]
+                "sections": ["tabFields", "position"]
             }
         }
     }
