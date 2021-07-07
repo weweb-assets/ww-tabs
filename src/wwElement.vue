@@ -17,10 +17,7 @@
                     <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwElement
-                                    v-bind="item"
-                                    :states="index === currentTabIndex ? ['active'] : []"
-                                ></wwElement>
+                                <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
                             </wwLayoutItem>
                         </template>
                     </wwLayout>
