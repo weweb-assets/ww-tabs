@@ -1,71 +1,61 @@
 <template>
     <div class="tabs-object" :class="content.tabsPosition" :style="cssVariables">
         <div
-            class="tabs-container fixedToTop"
-            ref="fixedTabs"
             v-if="content.fixedToTop && content.tabFields.items"
+            ref="fixedTabs"
+            class="tabs-container fixedToTop"
             :class="content.tabsPosition"
             :style="cssTabsFixedPosition"
         >
             <div
-                class="layout-container"
                 v-for="(field, index) in content.tabFields.items"
                 :key="index"
+                class="layout-container"
                 @click="changeTab(index)"
             >
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
-                        <template v-slot="{ item }">
+                        <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwObject
+                                <wwElement
                                     v-bind="item"
                                     :states="index === currentTabIndex ? ['active'] : []"
-                                ></wwObject>
+                                ></wwElement>
                             </wwLayoutItem>
                         </template>
                     </wwLayout>
                 </div>
             </div>
         </div>
-
-        <div class="tabs-container" :class="content.tabsPosition" v-if="content.tabsList && !content.fixedToTop">
+        <div v-if="content.tabsList && !content.fixedToTop" class="tabs-container" :class="content.tabsPosition">
             <div
-                class="layout-container"
                 v-for="(field, index) in content.tabFields.items"
                 :key="index"
+                class="layout-container"
                 @click="changeTab(index)"
             >
                 <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`"
-                        ><template v-slot="{ item }">
+                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
+                        <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwObject
-                                    v-bind="item"
-                                    :states="index === currentTabIndex ? ['active'] : []"
-                                ></wwObject>
-                            </wwLayoutItem> </template
-                    ></wwLayout>
-                </div>
-            </div>
-        </div>
-
-        <transition-group :name="activeTransition" mode="out-in">
-            <div v-for="(field, index) in content.tabFields.items" :key="index">
-                <div class="tab-content" v-if="currentTabIndex === index">
-                    <wwLayout class="layout -layout" :class="{ isEditing: isEditing }" :path="`tabsContent[${index}]`">
+                                <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
+                            </wwLayoutItem>
+                        </template>
                     </wwLayout>
                 </div>
             </div>
+        </div>
+        <transition-group :name="activeTransition" mode="out-in">
+            <div v-for="(field, index) in content.tabFields.items" :key="index">
+                <div v-if="currentTabIndex === index" class="tab-content">
+                    <wwLayout
+                        class="layout -layout"
+                        :class="{ isEditing: isEditing }"
+                        :path="`tabsContent[${index}]`"
+                    />
+                </div>
+            </div>
         </transition-group>
-
-        <!-- <div class="tabs-content" :key="currentTabIndex">
-                <wwLayout
-                    class="layout -layout"
-                    :class="{ isEditing: isEditing }"
-                    :path="`tabsContent[${currentTabIndex}]`"
-                >
-                </wwLayout>
-            </div> -->
     </div>
 </template>
 
@@ -74,11 +64,12 @@ import { getSettingsConfigurations } from './configuration';
 
 export default {
     props: {
-        content: Object,
+        content: { type: Object, required: true },
         /* wwEditor:start */
-        wwEditorState: Object,
+        wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
     },
+    emits: ['update:content'],
     wwDefaultContent: {
         tabsPosition: 'top',
         transition: 'fade',
@@ -91,7 +82,6 @@ export default {
         leftRightPosition: '30%',
         topBottomPosition: '-50%',
         activeTransition: 'fade',
-
         tabFields: {
             items: [
                 {
@@ -122,6 +112,33 @@ export default {
             activeTransition: 'fade',
         };
     },
+    computed: {
+        isEditing() {
+            /* wwEditor:start */
+            return this.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
+            /* wwEditor:end */
+            // eslint-disable-next-line no-unreachable
+            return false;
+        },
+        cssVariables() {
+            return {
+                '--tab-transition-duration': this.content.transitionDuration + 's',
+            };
+        },
+        cssTabsFixedPosition() {
+            return {
+                '--tab-leftRight-position': this.content.leftRightPosition,
+                '--tab-topBottom-position': this.content.topBottomPosition,
+            };
+        },
+        getSublayoutHeight() {
+            const elHeight = document.querySelectorAll('.tabs-sublayout-container');
+            if (elHeight && elHeight.length && elHeight[this.currentTabIndex]) {
+                return `${elHeight[this.currentTabIndex].offsetHeight}px`;
+            }
+            return '24px';
+        },
+    },
     watch: {
         'content.tabFields'() {
             if (this.content.tabFields.moveHandler[0] !== null && this.content.tabFields.moveHandler[1] !== null) {
@@ -150,7 +167,7 @@ export default {
                     moveHandler: [null, null],
                 };
 
-                this.$emit('update', {
+                this.$emit('update:content', {
                     tabFields: tabFields,
                     tabsList: tabsList,
                     subTabLayouts: subTabLayouts,
@@ -166,7 +183,7 @@ export default {
                 subTabLayouts.splice(this.content.tabFields.target, 1);
                 tabsContent.splice(this.content.tabFields.target, 1);
 
-                this.$emit('update', {
+                this.$emit('update:content', {
                     tabsList: tabsList,
                     subTabLayouts: subTabLayouts,
                     tabsContent: tabsContent,
@@ -177,41 +194,12 @@ export default {
             this.changeTab(this.currentTabIndex);
         },
     },
-    computed: {
-        isEditing() {
-            /* wwEditor:start */
-            return this.wwEditorState.editMode === wwLib.wwEditorHelper.EDIT_MODES.EDITION;
-            /* wwEditor:end */
-            // eslint-disable-next-line no-unreachable
-            return false;
-        },
-        cssVariables() {
-            return {
-                '--tab-transition-duration': this.content.transitionDuration + 's',
-            };
-        },
-        cssTabsFixedPosition() {
-            return {
-                '--tab-leftRight-position': this.content.leftRightPosition,
-                '--tab-topBottom-position': this.content.topBottomPosition,
-            };
-        },
-        getSublayoutHeight() {
-            const elHeight = document.querySelectorAll('.tabs-sublayout-container');
-            if (elHeight && elHeight.length && elHeight[this.currentTabIndex]) {
-                return `${elHeight[this.currentTabIndex].offsetHeight}px`;
-            }
-
-            return '24px';
-        },
-    },
     methods: {
         changeTab(index) {
             if (index < 0) return;
             this.order = index > this.currentTabIndex ? 'after' : 'before';
             this.handleTransition(this.order);
             this.currentTabIndex = index;
-            console.log(this.currentTabIndex);
         },
         handleTransition(order) {
             switch (this.content.transition) {
