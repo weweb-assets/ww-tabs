@@ -311,7 +311,7 @@ export default {
             align-items: center;
 
             @media only screen and (max-width: 400px) {
-                flex-direction: columns;
+                flex-direction: column;
             }
 
             .layout-sublayout {
