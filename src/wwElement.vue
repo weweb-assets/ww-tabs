@@ -281,6 +281,10 @@ export default {
         width: 100%;
         min-width: 390px;
 
+        @media only screen and (max-width: 400px) {
+            min-width: auto;
+        }
+
         &.fixedToTop {
             width: 100vw;
             z-index: 9999999;
@@ -309,10 +313,6 @@ export default {
             flex-direction: row;
             justify-content: center;
             align-items: center;
-
-            @media only screen and (max-width: 400px) {
-                flex-direction: column;
-            }
 
             .layout-sublayout {
                 flex-direction: row;
