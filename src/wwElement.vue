@@ -310,6 +310,10 @@ export default {
             justify-content: center;
             align-items: center;
 
+            @media only screen and (max-width: 400px) {
+                flex-direction: columns;
+            }
+
             .layout-sublayout {
                 flex-direction: row;
                 justify-content: center;
