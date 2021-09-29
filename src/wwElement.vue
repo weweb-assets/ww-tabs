@@ -1,18 +1,13 @@
 <template>
     <div class="tabs-object" :class="content.tabsPosition" :style="cssVariables">
         <div
-            v-if="content.fixedToTop && content.tabFields.items"
+            v-if="fixedToTop && content.tabFields.items"
             ref="fixedTabs"
             class="tabs-container fixedToTop"
             :class="content.tabsPosition"
             :style="cssTabsFixedPosition"
         >
-            <div
-                v-for="(field, index) in content.tabFields.items"
-                :key="index"
-                class="layout-container"
-                @click="changeTab(index)"
-            >
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
                         <template #default="{ item }">
@@ -24,13 +19,8 @@
                 </div>
             </div>
         </div>
-        <div v-if="content.tabsList && !content.fixedToTop" class="tabs-container" :class="content.tabsPosition">
-            <div
-                v-for="(field, index) in content.tabFields.items"
-                :key="index"
-                class="layout-container"
-                @click="changeTab(index)"
-            >
+        <div v-if="content.tabsList && !fixedToTop" class="tabs-container" :class="content.tabsPosition">
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
                         <template #default="{ item }">
@@ -43,7 +33,7 @@
             </div>
         </div>
         <transition-group :name="activeTransition" mode="out-in">
-            <div v-for="(field, index) in content.tabFields.items" :key="index">
+            <div v-for="index in nbOfTabs" :key="index">
                 <div v-if="currentTabIndex === index" class="tab-content">
                     <wwLayout
                         class="layout -layout"
@@ -57,8 +47,6 @@
 </template>
 
 <script>
-import { getSettingsConfigurations } from './configuration';
-
 export default {
     props: {
         content: { type: Object, required: true },
@@ -67,44 +55,9 @@ export default {
         /* wwEditor:end */
     },
     emits: ['update:content'],
-    wwDefaultContent: {
-        tabsPosition: 'top',
-        transition: 'fade',
-        transitionDuration: 0.5,
-        order: null,
-        tabsContent: [],
-        tabsList: [],
-        subTabLayouts: [],
-        fixedToTop: false,
-        leftRightPosition: '30%',
-        topBottomPosition: '-50%',
-        activeTransition: 'fade',
-        tabFields: {
-            items: [
-                {
-                    checked: true,
-                    index: 0,
-                },
-                {
-                    checked: false,
-                    index: 1,
-                },
-                {
-                    checked: false,
-                    index: 2,
-                },
-            ],
-            target: null,
-            moveHandler: [null, null],
-        },
-    },
-    /* wwEditor:start */
-    wwEditorConfiguration({ content }) {
-        return getSettingsConfigurations(content);
-    },
-    /* wwEditor:end */
     data() {
         return {
+            order: null,
             currentTabIndex: 0,
             activeTransition: 'fade',
         };
@@ -117,10 +70,16 @@ export default {
             // eslint-disable-next-line no-unreachable
             return false;
         },
+        nbOfTabs() {
+            return this.content.tabsList.length;
+        },
         cssVariables() {
             return {
                 '--tab-transition-duration': this.content.transitionDuration + 's',
             };
+        },
+        fixedToTop() {
+            return this.content.tabsPosition === 'custom';
         },
         cssTabsFixedPosition() {
             return {
@@ -143,21 +102,6 @@ export default {
                 const subTabLayouts = [...this.content.subTabLayouts] || [];
                 const tabsContent = [...this.content.tabsContent] || [];
 
-                this.moveInArray(
-                    tabsList,
-                    this.content.tabFields.moveHandler[0],
-                    this.content.tabFields.moveHandler[1]
-                );
-                this.moveInArray(
-                    subTabLayouts,
-                    this.content.tabFields.moveHandler[0],
-                    this.content.tabFields.moveHandler[1]
-                );
-                this.moveInArray(
-                    tabsContent,
-                    this.content.tabFields.moveHandler[0],
-                    this.content.tabFields.moveHandler[1]
-                );
                 const tabFields = {
                     items: [...this.content.tabFields.items],
                     target: this.content.tabFields.target,
@@ -215,22 +159,6 @@ export default {
                 default:
                     this.activeTransition = 'fade';
             }
-        },
-        moveInArray(arr, old_index, new_index) {
-            while (old_index < 0) {
-                old_index += arr.length;
-            }
-            while (new_index < 0) {
-                new_index += arr.length;
-            }
-            if (new_index >= arr.length) {
-                let k = new_index - arr.length;
-                while (k-- + 1) {
-                    arr.push(undefined);
-                }
-            }
-            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-            return arr;
         },
     },
 };
