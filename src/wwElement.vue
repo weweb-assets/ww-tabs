@@ -33,18 +33,17 @@
                 </div>
             </div>
         </div>
-        <transition-group :name="activeTransition" mode="out-in">
-            <div v-for="index in nbOfTabs" :key="index">
-                <div class="tab-content">
-                    <wwLayout
-                        class="layout -layout"
-                        :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${index - 1}]`"
-                    />
-                    {{ console.log(this.content.tabsContent[index - 1]) }}
-                </div>
+
+        <div v-for="index in nbOfTabs" :key="index">
+            <div class="tab-content">
+                <wwLayout
+                    class="layout -layout"
+                    :class="{ isEditing: isEditing }"
+                    :path="`tabsContent[${index - 1}]`"
+                />
+                {{ console.log(this.content.tabsContent[index - 1]) }}
             </div>
-        </transition-group>
+        </div>
     </div>
 </template>
 
