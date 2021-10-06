@@ -1,5 +1,6 @@
 <template>
     <div class="tabs-object" :class="content.tabsPosition" :style="cssVariables">
+        DEV
         <div
             v-if="fixedToTop && content.tabFields.items"
             ref="fixedTabs"
