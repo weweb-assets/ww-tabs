@@ -58,7 +58,7 @@ export default {
     data() {
         return {
             order: null,
-            currentTabIndex: 0,
+            currentTabIndex: 1,
             activeTransition: 'fade',
         };
     },
