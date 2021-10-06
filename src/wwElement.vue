@@ -45,6 +45,8 @@
                 </div>
             </div>
         </transition-group>
+        TEST TAB
+        <wwLayout class="layout -layout" :class="{ isEditing: isEditing }" :path="`tabsContent[0]`" />
     </div>
 </template>
 
