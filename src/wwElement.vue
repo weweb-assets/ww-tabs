@@ -1,6 +1,5 @@
 <template>
     <div class="tabs-object" :class="content.tabsPosition" :style="cssVariables">
-        DEV
         <div
             v-if="fixedToTop && content.tabFields.items"
             ref="fixedTabs"
@@ -26,7 +25,7 @@
                     <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
+                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
                             </wwLayoutItem>
                         </template>
                     </wwLayout>
@@ -39,13 +38,11 @@
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${index}]`"
+                        :path="`tabsContent[${index - 1}]`"
                     />
                 </div>
             </div>
         </transition-group>
-        TEST TAB
-        <wwLayout class="layout -layout" :class="{ isEditing: isEditing }" :path="`tabsContent[0]`" />
     </div>
 </template>
 
