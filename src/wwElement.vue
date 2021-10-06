@@ -9,7 +9,7 @@
         >
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
                 <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
+                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
                                 <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
@@ -22,7 +22,7 @@
         <div v-if="content.tabsList && !fixedToTop" class="tabs-container" :class="content.tabsPosition">
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
                 <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
+                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
                                 <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
@@ -38,7 +38,7 @@
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${currentTabIndex}]`"
+                        :path="`tabsContent[${index - 1}]`"
                     />
                 </div>
             </div>
