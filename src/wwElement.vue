@@ -34,8 +34,7 @@
         </div>
         <transition-group :name="activeTransition" mode="out-in">
             <div v-for="index in nbOfTabs" :key="index">
-                {{ index + '-' + currentTabIndex }}
-                <div v-if="currentTabIndex + 1 === index" class="tab-content">
+                <div v-if="currentTabIndex === index" class="tab-content">
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
@@ -100,43 +99,6 @@ export default {
         'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
             this.currentTabIndex = newIndex;
         },
-        'content.tabFields'() {
-            // if (this.content.tabFields.moveHandler[0] !== null && this.content.tabFields.moveHandler[1] !== null) {
-            //     const tabsList = [...this.content.tabsList] || [];
-            //     const subTabLayouts = [...this.content.subTabLayouts] || [];
-            //     const tabsContent = [...this.content.tabsContent] || [];
-            //     const tabFields = {
-            //         items: [...this.content.tabFields.items],
-            //         target: this.content.tabFields.target,
-            //         moveHandler: [null, null],
-            //     };
-            //     this.$emit('update:content', {
-            //         tabFields: tabFields,
-            //         tabsList: tabsList,
-            //         subTabLayouts: subTabLayouts,
-            //         tabsContent: tabsContent,
-            //     });
-            // }
-            // if (this.content.tabFields.target) {
-            //     const tabsList = [...this.content.tabsList];
-            //     const subTabLayouts = [...this.content.subTabLayouts];
-            //     const tabsContent = [...this.content.tabsContent];
-            //     tabsList.splice(this.content.tabFields.target, 1);
-            //     subTabLayouts.splice(this.content.tabFields.target, 1);
-            //     tabsContent.splice(this.content.tabFields.target, 1);
-            //     this.$emit('update:content', {
-            //         tabsList: tabsList,
-            //         subTabLayouts: subTabLayouts,
-            //         tabsContent: tabsContent,
-            //         tabFields: { ...this.content.tabFields, target: null },
-            //     });
-            // }
-            // this.currentTabIndex = this.content.tabFields.items.findIndex(item => item.checked);
-            // this.changeTab(this.currentTabIndex);
-        },
-    },
-    mounted() {
-        console.log(this.content.tabsContent);
     },
     methods: {
         changeTab(index) {
