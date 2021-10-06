@@ -35,13 +35,12 @@
         </div>
         <transition-group :name="activeTransition" mode="out-in">
             <div v-for="index in nbOfTabs" :key="index">
-                <div class="tab-content">
+                <div v-if="currentTabIndex === index" class="tab-content">
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${index - 1}]`"
+                        :path="`tabsContent[${index}]`"
                     />
-                    {{ console.log(this.content.tabsContent[index - 1]) }}
                 </div>
             </div>
         </transition-group>
