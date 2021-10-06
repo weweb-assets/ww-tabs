@@ -25,7 +25,7 @@
                     <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
+                                <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
                             </wwLayoutItem>
                         </template>
                     </wwLayout>
@@ -34,7 +34,7 @@
         </div>
         <transition-group :name="activeTransition" mode="out-in">
             <div v-for="index in nbOfTabs" :key="index">
-                <div v-if="currentTabIndex === index - 1" class="tab-content">
+                <div v-if="currentTabIndex === index" class="tab-content">
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
