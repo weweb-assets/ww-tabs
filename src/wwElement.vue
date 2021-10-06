@@ -38,7 +38,7 @@
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${index}]`"
+                        :path="`tabsContent[${currentTabIndex}]`"
                     />
                 </div>
             </div>
