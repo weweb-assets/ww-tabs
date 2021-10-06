@@ -99,15 +99,15 @@ export default {
         },
         tabsContent: {
             hidden: true,
-            defaultValue: [[], [], []],
+            defaultValue: [],
         },
         tabsList: {
             hidden: true,
-            defaultValue: [[], [], []],
+            defaultValue: [],
         },
         subTabLayouts: {
             hidden: true,
-            defaultValue: [[], [], []],
+            defaultValue: [],
         },
     },
 };
