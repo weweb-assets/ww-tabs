@@ -34,7 +34,7 @@
         </div>
         <transition-group :name="activeTransition" mode="out-in">
             <div v-for="index in nbOfTabs" :key="index">
-                <div v-if="currentTabIndex === index" class="tab-content">
+                <div class="tab-content">
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
