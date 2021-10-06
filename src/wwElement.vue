@@ -40,6 +40,7 @@
                         :class="{ isEditing: isEditing }"
                         :path="`tabsContent[${index - 1}]`"
                     />
+                    {{ console.log(this.content.tabsContent[index - 1]) }}
                 </div>
             </div>
         </transition-group>
