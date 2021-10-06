@@ -34,7 +34,8 @@
         </div>
         <transition-group :name="activeTransition" mode="out-in">
             <div v-for="index in nbOfTabs" :key="index">
-                <div v-if="currentTabIndex === index" class="tab-content">
+                {{ index + '-' + currentTabIndex }}
+                <div v-if="currentTabIndex + 1 === index" class="tab-content">
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
@@ -88,7 +89,7 @@ export default {
             };
         },
         getSublayoutHeight() {
-            const elHeight = document.querySelectorAll('.tabs-sublayout-container');
+            const elHeight = wwLib.getFrontDocument().querySelectorAll('.tabs-sublayout-container');
             if (elHeight && elHeight.length && elHeight[this.currentTabIndex]) {
                 return `${elHeight[this.currentTabIndex].offsetHeight}px`;
             }
@@ -96,44 +97,46 @@ export default {
         },
     },
     watch: {
-        'content.tabFields'() {
-            if (this.content.tabFields.moveHandler[0] !== null && this.content.tabFields.moveHandler[1] !== null) {
-                const tabsList = [...this.content.tabsList] || [];
-                const subTabLayouts = [...this.content.subTabLayouts] || [];
-                const tabsContent = [...this.content.tabsContent] || [];
-
-                const tabFields = {
-                    items: [...this.content.tabFields.items],
-                    target: this.content.tabFields.target,
-                    moveHandler: [null, null],
-                };
-
-                this.$emit('update:content', {
-                    tabFields: tabFields,
-                    tabsList: tabsList,
-                    subTabLayouts: subTabLayouts,
-                    tabsContent: tabsContent,
-                });
-            }
-
-            if (this.content.tabFields.target) {
-                const tabsList = [...this.content.tabsList];
-                const subTabLayouts = [...this.content.subTabLayouts];
-                const tabsContent = [...this.content.tabsContent];
-                tabsList.splice(this.content.tabFields.target, 1);
-                subTabLayouts.splice(this.content.tabFields.target, 1);
-                tabsContent.splice(this.content.tabFields.target, 1);
-
-                this.$emit('update:content', {
-                    tabsList: tabsList,
-                    subTabLayouts: subTabLayouts,
-                    tabsContent: tabsContent,
-                    tabFields: { ...this.content.tabFields, target: null },
-                });
-            }
-            this.currentTabIndex = this.content.tabFields.items.findIndex(item => item.checked);
-            this.changeTab(this.currentTabIndex);
+        'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
+            this.currentTabIndex = newIndex;
         },
+        'content.tabFields'() {
+            // if (this.content.tabFields.moveHandler[0] !== null && this.content.tabFields.moveHandler[1] !== null) {
+            //     const tabsList = [...this.content.tabsList] || [];
+            //     const subTabLayouts = [...this.content.subTabLayouts] || [];
+            //     const tabsContent = [...this.content.tabsContent] || [];
+            //     const tabFields = {
+            //         items: [...this.content.tabFields.items],
+            //         target: this.content.tabFields.target,
+            //         moveHandler: [null, null],
+            //     };
+            //     this.$emit('update:content', {
+            //         tabFields: tabFields,
+            //         tabsList: tabsList,
+            //         subTabLayouts: subTabLayouts,
+            //         tabsContent: tabsContent,
+            //     });
+            // }
+            // if (this.content.tabFields.target) {
+            //     const tabsList = [...this.content.tabsList];
+            //     const subTabLayouts = [...this.content.subTabLayouts];
+            //     const tabsContent = [...this.content.tabsContent];
+            //     tabsList.splice(this.content.tabFields.target, 1);
+            //     subTabLayouts.splice(this.content.tabFields.target, 1);
+            //     tabsContent.splice(this.content.tabFields.target, 1);
+            //     this.$emit('update:content', {
+            //         tabsList: tabsList,
+            //         subTabLayouts: subTabLayouts,
+            //         tabsContent: tabsContent,
+            //         tabFields: { ...this.content.tabFields, target: null },
+            //     });
+            // }
+            // this.currentTabIndex = this.content.tabFields.items.findIndex(item => item.checked);
+            // this.changeTab(this.currentTabIndex);
+        },
+    },
+    mounted() {
+        console.log(this.content.tabsContent);
     },
     methods: {
         changeTab(index) {
@@ -142,6 +145,38 @@ export default {
             this.handleTransition(this.order);
             this.currentTabIndex = index;
         },
+        /* wwEditor:start */
+        async addTab() {
+            const tabsList = [...this.content.tabsList];
+            const subTabLayouts = [...this.content.subTabLayouts];
+            const tabsContent = [...this.content.tabsContent];
+
+            if (tabsList.length === 0) {
+                tabsList.push([]);
+                subTabLayouts.push([]);
+                tabsContent.push([]);
+            } else {
+                const tab = tabsList[tabsList.length - 1];
+                const subTab = subTabLayouts[subTabLayouts.length - 1];
+                const content = tabsContent[tabsContent.length - 1];
+                tabsList.push(tab);
+                subTabLayouts.push(subTab);
+                tabsContent.push(content);
+            }
+
+            this.$emit('update:content', { tabsList, subTabLayouts, tabsContent });
+        },
+        removeTab(index) {
+            const tabsList = [...this.content.tabsList];
+            const subTabLayouts = [...this.content.subTabLayouts];
+            const tabsContent = [...this.content.tabsContent];
+            tabsList.splice(index, 1);
+            subTabLayouts.splice(index, 1);
+            tabsContent.splice(index, 1);
+
+            this.$emit('update:content', { tabsList, subTabLayouts, tabsContent });
+        },
+        /* wwEditor:end */
         handleTransition(order) {
             switch (this.content.transition) {
                 case 'fade':
