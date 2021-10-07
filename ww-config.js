@@ -21,7 +21,7 @@ export default {
             editorOnly: true,
             options: content => ({
                 labels: content.tabsList.map((item, index) => ({
-                    label: 'Tab' + index,
+                    label: 'Tab ' + index + 1,
                 })),
                 prefixLabel: 'Tab',
                 nbTabs: content.tabsList.length,

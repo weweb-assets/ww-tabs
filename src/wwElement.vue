@@ -1,5 +1,5 @@
 <template>
-    <div class="tabs-object" :class="content.tabsPosition" :style="cssVariables">
+    <div class="tabs-element" :class="content.tabsPosition" :style="cssVariables">
         <div
             v-if="content.fixedToTop && content.tabFields.items"
             ref="fixedTabs"
@@ -160,7 +160,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tabs-object {
+.tabs-element {
     --tab-transition-duration: 0.5s;
     --tab-leftRight-position: 30%;
     --tab-topBottom-position: -50%;
