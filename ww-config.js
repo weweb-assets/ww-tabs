@@ -20,10 +20,7 @@ export default {
             type: 'Tabs',
             editorOnly: true,
             options: content => ({
-                labels: content.tabsList.map(({ uid }) => ({
-                    type: 'element',
-                    uid,
-                })),
+                labels: 'Tab',
                 prefixLabel: 'Tab',
                 nbTabs: content.tabsList.length,
                 add: 'addTab',
