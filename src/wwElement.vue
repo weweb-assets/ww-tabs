@@ -1,5 +1,6 @@
 <template>
     <div class="tabs-element" :class="content.tabsPosition" :style="cssVariables">
+        {{ content.tabsPosition }}
         <div
             v-if="content.fixedToTop && content.tabsList"
             ref="fixedTabs"

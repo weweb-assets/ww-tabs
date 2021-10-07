@@ -15,22 +15,22 @@ export default {
         },
     },
     properties: {
-        tabIndex: {
-            label: { en: 'Tabs', fr: 'Tabs' },
-            type: 'Tabs',
-            editorOnly: true,
-            options: content => ({
-                labels: content.tabsList.map(({ item }, index) => ({
-                    label: 'Tab ' + (index + 1),
-                })),
-                prefixLabel: 'Tab',
-                nbTabs: content.tabsList.length,
-                add: 'addTab',
-                remove: 'removeTab',
-            }),
-            section: 'settings',
-            defaultValue: 0,
-        },
+        // tabIndex: {
+        //     label: { en: 'Tabs', fr: 'Tabs' },
+        //     type: 'Tabs',
+        //     editorOnly: true,
+        //     options: content => ({
+        //         labels: content.tabsList.map(({ item }, index) => ({
+        //             label: 'Tab ' + (index + 1),
+        //         })),
+        //         prefixLabel: 'Tab',
+        //         nbTabs: content.tabsList.length,
+        //         add: 'addTab',
+        //         remove: 'removeTab',
+        //     }),
+        //     section: 'settings',
+        //     defaultValue: 0,
+        // },
         tabsPosition: {
             label: {
                 en: 'Tabs position',
