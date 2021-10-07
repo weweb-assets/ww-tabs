@@ -20,7 +20,7 @@ export default {
             type: 'Tabs',
             editorOnly: true,
             options: content => ({
-                labels: content.mainLayoutContent.map(item => ({
+                labels: content.mainLayoutContent.map(({ item }) => ({
                     type: 'element',
                 })),
                 prefixLabel: 'Tab',
