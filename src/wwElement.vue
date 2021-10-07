@@ -1,7 +1,7 @@
 <template>
     <div class="tabs-element" :class="content.tabsPosition" :style="cssVariables">
         <div
-            v-if="content.fixedToTop && content.tabFields.items"
+            v-if="content.fixedToTop && content.tabsList"
             ref="fixedTabs"
             class="tabs-container fixedToTop"
             :class="content.tabsPosition"
