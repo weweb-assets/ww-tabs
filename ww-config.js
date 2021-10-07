@@ -20,11 +20,11 @@ export default {
             type: 'Tabs',
             editorOnly: true,
             options: content => ({
-                labels: content.mainLayoutContent.map(({ item }) => ({
+                labels: content.tabsList.map(({ item }) => ({
                     type: 'element',
                 })),
                 prefixLabel: 'Tab',
-                nbTabs: content.mainLayoutContent.length,
+                nbTabs: content.tabsList.length,
                 add: 'addTab',
                 remove: 'removeTab',
             }),
