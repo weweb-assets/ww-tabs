@@ -20,7 +20,7 @@ export default {
             type: 'Tabs',
             editorOnly: true,
             options: content => ({
-                labels: content.tabsList.map((item, index) => ({
+                labels: content.tabsList.map(({ item }, index) => ({
                     label: 'Tab ' + (index + 1),
                 })),
                 prefixLabel: 'Tab',

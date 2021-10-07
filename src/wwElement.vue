@@ -9,7 +9,7 @@
         >
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
                 <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index}]`">
+                    <wwLayout class="layout -layout" :path="`tabsList[${index + 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
                                 <wwElement
