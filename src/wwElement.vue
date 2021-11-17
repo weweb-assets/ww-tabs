@@ -97,7 +97,7 @@ export default {
     },
     watch: {
         'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
-            this.currentTabIndex = newIndex;
+            this.currentTabIndex = newIndex + 1;
         },
     },
     methods: {
