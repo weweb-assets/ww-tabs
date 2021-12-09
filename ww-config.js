@@ -128,7 +128,7 @@ export default {
             type: 'Number',
             options: content => ({
                 min: 0,
-                max: content.tabsList.length,
+                max: Math.max(0, content.tabsList.length - 1),
             }),
             section: 'settings',
             hidden: content => content.variable,

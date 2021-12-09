@@ -58,7 +58,7 @@ export default {
         uid: { type: String, required: true },
     },
     emits: ['update:content'],
-    setup() {
+    setup(props) {
         const contentVariableId = computed(() => props.content.variableId);
         const variableId = wwLib.wwVariable.useComponentVariable(props.uid, 'selectedTab', 0, contentVariableId);
 
