@@ -109,5 +109,29 @@ export default {
             hidden: true,
             defaultValue: [],
         },
+        variableId: {
+            label: {
+                en: 'Associated variable',
+            },
+            type: 'Variable',
+            options: {
+                types: ['Number'],
+            },
+            section: 'settings',
+            defaultValue: null,
+        },
+        initialValue: {
+            label: {
+                en: 'Initial value',
+            },
+            type: 'Number',
+            options: content => ({
+                min: 0,
+                max: Math.max(0, content.tabsList.length - 1),
+            }),
+            section: 'settings',
+            hidden: content => content.variableId,
+            bindable: true,
+        },
     },
 };
