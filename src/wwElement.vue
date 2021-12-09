@@ -7,12 +7,12 @@
             :class="content.tabsPosition"
             :style="cssTabsFixedPosition"
         >
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
+                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
                             </wwLayoutItem>
                         </template>
                     </wwLayout>
@@ -20,12 +20,12 @@
             </div>
         </div>
         <div v-if="content.tabsList && !fixedToTop" class="tabs-container" :class="content.tabsPosition">
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="changeTab(index)">
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
                             <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index === currentTabIndex ? ['active'] : []" />
+                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
                             </wwLayoutItem>
                         </template>
                     </wwLayout>
@@ -34,7 +34,7 @@
         </div>
         <transition-group :name="activeTransition" mode="out-in">
             <div v-for="index in nbOfTabs" :key="index">
-                <div v-if="currentTabIndex === index" class="tab-content">
+                <div v-if="currentTabIndex === index - 1" class="tab-content">
                     <wwLayout
                         class="layout -layout"
                         :class="{ isEditing: isEditing }"
@@ -47,19 +47,28 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
 export default {
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
         wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
+        uid: { type: String, required: true },
     },
     emits: ['update:content'],
+    setup() {
+        const contentVariableId = computed(() => props.content.variableId);
+        const variableId = wwLib.wwVariable.useComponentVariable(props.uid, 'selectedTab', 0, contentVariableId);
+
+        return { variableId };
+    },
     data() {
         return {
             order: null,
-            currentTabIndex: 1,
             activeTransition: 'fade',
+            internalCurrentTabIndex: 0,
         };
     },
     computed: {
@@ -94,19 +103,39 @@ export default {
             }
             return '24px';
         },
+        currentTabIndex: {
+            get() {
+                if (this.variableId) return wwLib.wwVariable.getValue(this.variableId);
+                return this.internalCurrentTabIndex;
+            },
+            set(index) {
+                // Secure index range
+                index = Math.max(0, Math.min(index, this.nbOfTabs - 1));
+                if (index === this.currentTabIndex) return;
+
+                // Transition
+                this.order = index > this.currentTabIndex ? 'after' : 'before';
+                this.handleTransition(this.order);
+
+                // Updating
+                if (this.variableId) wwLib.wwVariable.updateValue(this.variableId, index);
+                this.internalCurrentTabIndex = index;
+            },
+        },
     },
     watch: {
+        /* wwEditor:start */
         'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
-            this.currentTabIndex = newIndex + 1;
+            this.currentTabIndex = newIndex;
         },
+        /* wwEditor:end */
+    },
+    mounted() {
+        if (this.content.initialValue !== undefined && !this.content.variableId) {
+            this.currentTabIndex = this.content.initialValue;
+        }
     },
     methods: {
-        changeTab(index) {
-            if (index < 0) return;
-            this.order = index > this.currentTabIndex ? 'after' : 'before';
-            this.handleTransition(this.order);
-            this.currentTabIndex = index;
-        },
         /* wwEditor:start */
         async addTab() {
             const tabsList = [...this.content.tabsList];
