@@ -105,8 +105,10 @@ export default {
         },
         currentTabIndex: {
             get() {
-                if (this.variableId) return wwLib.wwVariable.getValue(this.variableId);
-                return this.internalCurrentTabIndex;
+                const index = this.variableId
+                    ? wwLib.wwVariable.getValue(this.variableId)
+                    : this.internalCurrentTabIndex;
+                return Math.max(0, Math.min(index, this.nbOfTabs - 1));
             },
             set(index) {
                 // Secure index range

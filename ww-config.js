@@ -118,7 +118,6 @@ export default {
                 types: ['Number'],
             },
             section: 'settings',
-            bindable: true,
             defaultValue: null,
         },
         initialValue: {
@@ -131,7 +130,8 @@ export default {
                 max: Math.max(0, content.tabsList.length - 1),
             }),
             section: 'settings',
-            hidden: content => content.variable,
+            hidden: content => content.variableId,
+            bindable: true,
         },
     },
 };
