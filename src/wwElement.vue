@@ -145,13 +145,16 @@ export default {
             const tabsContent = [...this.content.tabsContent];
 
             if (tabsList.length === 0) {
-                tabsList.push([]);
-                subTabLayouts.push([]);
-                tabsContent.push([]);
+                const tab = await wwLib.createElement('ww-flexbox');
+                const subTab = await wwLib.createElement('ww-flexbox');
+                const content = await wwLib.createElement('ww-flexbox');
+                tabsList.push(tab);
+                subTabLayouts.push(subTab);
+                tabsContent.push(content);
             } else {
-                const tab = tabsList[tabsList.length - 1];
-                const subTab = subTabLayouts[subTabLayouts.length - 1];
-                const content = tabsContent[tabsContent.length - 1];
+                const tab = await wwLib.wwObjectHelper.cloneElement(tabsList[tabsList.length - 1].uid);
+                const subTab = await wwLib.wwObjectHelper.cloneElement(subTabLayouts[subTabLayouts.length - 1].uid);
+                const content = await wwLib.wwObjectHelper.cloneElement(tabsContent[tabsContent.length - 1].uid);
                 tabsList.push(tab);
                 subTabLayouts.push(subTab);
                 tabsContent.push(content);
