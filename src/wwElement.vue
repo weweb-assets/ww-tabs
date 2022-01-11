@@ -55,6 +55,7 @@ export default {
         /* wwEditor:start */
         wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
+        wwFrontState: { type: Object, required: true },
         uid: { type: String, required: true },
     },
     emits: ['update:content'],
@@ -145,16 +146,34 @@ export default {
             const tabsContent = [...this.content.tabsContent];
 
             if (tabsList.length === 0) {
-                tabsList.push([]);
-                subTabLayouts.push([]);
-                tabsContent.push([]);
-            } else {
-                const tab = tabsList[tabsList.length - 1];
-                const subTab = subTabLayouts[subTabLayouts.length - 1];
-                const content = tabsContent[tabsContent.length - 1];
+                const tab = await wwLib.createElement('ww-flexbox', {}, {}, this.wwFrontState.sectionId);
+                const subTab = await wwLib.createElement('ww-flexbox', {}, {}, this.wwFrontState.sectionId);
+                const content = await wwLib.createElement('ww-flexbox', {}, {}, this.wwFrontState.sectionId);
                 tabsList.push(tab);
                 subTabLayouts.push(subTab);
                 tabsContent.push(content);
+            } else {
+                if (tabsList && tabsList.length) {
+                    const tab = await wwLib.wwObjectHelper.cloneElement(
+                        tabsList[tabsList.length - 1].uid,
+                        this.wwFrontState.sectionId
+                    );
+                    tabsList.push(tab);
+                }
+                if (subTabLayouts && subTabLayouts.length) {
+                    const subTab = await wwLib.wwObjectHelper.cloneElement(
+                        subTabLayouts[subTabLayouts.length - 1].uid,
+                        this.wwFrontState.sectionId
+                    );
+                    subTabLayouts.push(subTab);
+                }
+                if (tabsContent && tabsContent.length) {
+                    const content = await wwLib.wwObjectHelper.cloneElement(
+                        tabsContent[tabsContent.length - 1].uid,
+                        this.wwFrontState.sectionId
+                    );
+                    tabsContent.push(content);
+                }
             }
 
             this.$emit('update:content', { tabsList, subTabLayouts, tabsContent });
