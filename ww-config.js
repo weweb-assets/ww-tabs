@@ -20,11 +20,9 @@ export default {
             type: 'Tabs',
             editorOnly: true,
             options: content => ({
-                labels: content.tabsList.map(({ uid }) => ({
-                    type: 'element',
-                    uid,
+                labels: content.tabsList.map((_, index) => ({
+                    label: `Tab ${index}`,
                 })),
-                prefixLabel: 'Tab',
                 nbTabs: content.tabsList.length,
                 add: 'addTab',
                 remove: 'removeTab',
@@ -105,24 +103,9 @@ export default {
             hidden: true,
             defaultValue: [],
         },
-        subTabLayouts: {
-            hidden: true,
-            defaultValue: [],
-        },
-        variableId: {
+        value: {
             label: {
-                en: 'Associated variable',
-            },
-            type: 'Variable',
-            options: {
-                types: ['Number'],
-            },
-            section: 'settings',
-            defaultValue: null,
-        },
-        initialValue: {
-            label: {
-                en: 'Initial value',
+                en: 'Active tab index',
             },
             type: 'Number',
             options: content => ({
@@ -130,7 +113,6 @@ export default {
                 max: Math.max(0, content.tabsList.length - 1),
             }),
             section: 'settings',
-            hidden: content => content.variableId,
             bindable: true,
         },
     },
