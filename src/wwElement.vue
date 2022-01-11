@@ -58,7 +58,13 @@ export default {
     },
     emits: ['update:content', 'trigger-event', 'update:sidepanel-content'],
     setup(props) {
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(props.uid, 'currentTab', 0);
+        const initialValue =
+            props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, this.nbOfTabs - 1));
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
+            props.uid,
+            'currentTab',
+            initialValue
+        );
 
         return { variableValue, setValue };
     },
@@ -115,8 +121,8 @@ export default {
                 this.handleTransition(this.order);
 
                 // Updating
-                this.$emit('trigger-event', { name: 'change', event: { value: index } });
                 this.setValue(index);
+                this.$emit('trigger-event', { name: 'change', event: { value: index } });
             },
         },
     },
@@ -132,7 +138,11 @@ export default {
         },
         /* wwEditor:end */
         'content.value'(value) {
-            this.currentTabIndex = value;
+            // Secure index range
+            const index = Math.max(0, Math.min(value, this.nbOfTabs - 1));
+            if (index === this.currentTabIndex) return;
+            this.setValue(index);
+            this.$emit('trigger-event', { name: 'initValueChange', event: { value: index } });
         },
     },
     methods: {
@@ -146,17 +156,17 @@ export default {
                 tabsContent.push([]);
             } else {
                 if (tabsList && tabsList.length) {
-                    const tab = await wwLib.wwObjectHelper.cloneElement(
-                        tabsList[tabsList.length - 1].uid,
-                        this.wwFrontState.sectionId
-                    );
+                    const tab = [];
+                    tabsList[tabsList.length - 1].forEach(async el => {
+                        tab.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
+                    });
                     tabsList.push(tab);
                 }
                 if (tabsContent && tabsContent.length) {
-                    const content = await wwLib.wwObjectHelper.cloneElement(
-                        tabsContent[tabsContent.length - 1].uid,
-                        this.wwFrontState.sectionId
-                    );
+                    const content = [];
+                    tabsContent[tabsContent.length - 1].forEach(async el => {
+                        content.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
+                    });
                     tabsContent.push(content);
                 }
             }

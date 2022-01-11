@@ -14,6 +14,10 @@ export default {
             },
         },
     },
+    triggerEvents: [
+        { name: 'change', label: { en: 'On change' }, event: { value: '' } },
+        { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
+    ],
     properties: {
         tabIndex: {
             label: { en: 'Tabs', fr: 'Tabs' },
