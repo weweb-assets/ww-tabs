@@ -47,8 +47,6 @@
 </template>
 
 <script>
-import { computed } from 'vue';
-
 export default {
     props: {
         content: { type: Object, required: true },
@@ -58,18 +56,22 @@ export default {
         wwFrontState: { type: Object, required: true },
         uid: { type: String, required: true },
     },
-    emits: ['update:content'],
+    emits: ['update:content', 'trigger-event', 'update:sidepanel-content'],
     setup(props) {
-        const contentVariableId = computed(() => props.content.variableId);
-        const variableId = wwLib.wwVariable.useComponentVariable(props.uid, 'selectedTab', 0, contentVariableId);
+        const initialValue =
+            props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, this.nbOfTabs - 1));
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
+            props.uid,
+            'currentTab',
+            initialValue
+        );
 
-        return { variableId };
+        return { variableValue, setValue };
     },
     data() {
         return {
             order: null,
             activeTransition: 'fade',
-            internalCurrentTabIndex: 0,
         };
     },
     computed: {
@@ -106,9 +108,7 @@ export default {
         },
         currentTabIndex: {
             get() {
-                const index = this.variableId
-                    ? wwLib.wwVariable.getValue(this.variableId)
-                    : this.internalCurrentTabIndex;
+                const index = this.variableValue;
                 return Math.max(0, Math.min(index, this.nbOfTabs - 1));
             },
             set(index) {
@@ -121,8 +121,8 @@ export default {
                 this.handleTransition(this.order);
 
                 // Updating
-                if (this.variableId) wwLib.wwVariable.updateValue(this.variableId, index);
-                this.internalCurrentTabIndex = index;
+                this.setValue(index);
+                this.$emit('trigger-event', { name: 'change', event: { value: index } });
             },
         },
     },
@@ -131,62 +131,55 @@ export default {
         'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
             this.currentTabIndex = newIndex;
         },
+        currentTabIndex(value) {
+            if (this.wwEditorState.sidepanelContent.tabIndex !== value) {
+                this.$emit('update:sidepanel-content', { value, path: 'tabIndex' });
+            }
+        },
         /* wwEditor:end */
-    },
-    mounted() {
-        if (this.content.initialValue !== undefined && !this.content.variableId) {
-            this.currentTabIndex = this.content.initialValue;
-        }
+        'content.value'(value) {
+            // Secure index range
+            const index = Math.max(0, Math.min(value, this.nbOfTabs - 1));
+            if (index === this.currentTabIndex) return;
+            this.setValue(index);
+            this.$emit('trigger-event', { name: 'initValueChange', event: { value: index } });
+        },
     },
     methods: {
         /* wwEditor:start */
         async addTab() {
             const tabsList = [...this.content.tabsList];
-            const subTabLayouts = [...this.content.subTabLayouts];
             const tabsContent = [...this.content.tabsContent];
 
             if (tabsList.length === 0) {
-                const tab = await wwLib.createElement('ww-flexbox', {}, {}, this.wwFrontState.sectionId);
-                const subTab = await wwLib.createElement('ww-flexbox', {}, {}, this.wwFrontState.sectionId);
-                const content = await wwLib.createElement('ww-flexbox', {}, {}, this.wwFrontState.sectionId);
-                tabsList.push(tab);
-                subTabLayouts.push(subTab);
-                tabsContent.push(content);
+                tabsList.push([]);
+                tabsContent.push([]);
             } else {
                 if (tabsList && tabsList.length) {
-                    const tab = await wwLib.wwObjectHelper.cloneElement(
-                        tabsList[tabsList.length - 1].uid,
-                        this.wwFrontState.sectionId
-                    );
+                    const tab = [];
+                    tabsList[tabsList.length - 1].forEach(async el => {
+                        tab.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
+                    });
                     tabsList.push(tab);
                 }
-                if (subTabLayouts && subTabLayouts.length) {
-                    const subTab = await wwLib.wwObjectHelper.cloneElement(
-                        subTabLayouts[subTabLayouts.length - 1].uid,
-                        this.wwFrontState.sectionId
-                    );
-                    subTabLayouts.push(subTab);
-                }
                 if (tabsContent && tabsContent.length) {
-                    const content = await wwLib.wwObjectHelper.cloneElement(
-                        tabsContent[tabsContent.length - 1].uid,
-                        this.wwFrontState.sectionId
-                    );
+                    const content = [];
+                    tabsContent[tabsContent.length - 1].forEach(async el => {
+                        content.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
+                    });
                     tabsContent.push(content);
                 }
             }
 
-            this.$emit('update:content', { tabsList, subTabLayouts, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent });
         },
         removeTab(index) {
             const tabsList = [...this.content.tabsList];
-            const subTabLayouts = [...this.content.subTabLayouts];
             const tabsContent = [...this.content.tabsContent];
             tabsList.splice(index, 1);
-            subTabLayouts.splice(index, 1);
             tabsContent.splice(index, 1);
 
-            this.$emit('update:content', { tabsList, subTabLayouts, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent });
         },
         /* wwEditor:end */
         handleTransition(order) {
