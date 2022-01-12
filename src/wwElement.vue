@@ -7,7 +7,7 @@
             :class="content.tabsPosition"
             :style="cssTabsFixedPosition"
         >
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="handleManualChange(index - 1)">
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
                         <template #default="{ item }">
@@ -106,30 +106,15 @@ export default {
             }
             return '24px';
         },
-        currentTabIndex: {
-            get() {
-                const index = this.variableValue;
-                return Math.max(0, Math.min(index, this.nbOfTabs - 1));
-            },
-            set(index) {
-                // Secure index range
-                index = Math.max(0, Math.min(index, this.nbOfTabs - 1));
-                if (index === this.currentTabIndex) return;
-
-                // Transition
-                this.order = index > this.currentTabIndex ? 'after' : 'before';
-                this.handleTransition(this.order);
-
-                // Updating
-                this.setValue(index);
-                this.$emit('trigger-event', { name: 'change', event: { value: index } });
-            },
+        currentTabIndex() {
+            const index = this.variableValue;
+            return Math.max(0, Math.min(index, this.nbOfTabs - 1));
         },
     },
     watch: {
         /* wwEditor:start */
         'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
-            this.currentTabIndex = newIndex;
+            this.setValue(newIndex);
         },
         currentTabIndex(value) {
             if (this.wwEditorState.sidepanelContent.tabIndex !== value) {
@@ -199,6 +184,19 @@ export default {
                 default:
                     this.activeTransition = 'fade';
             }
+        },
+        handleManualChange(index) {
+            // Secure index range
+            index = Math.max(0, Math.min(index, this.nbOfTabs - 1));
+            if (index === this.currentTabIndex) return;
+
+            // Transition
+            this.order = index > this.currentTabIndex ? 'after' : 'before';
+            this.handleTransition(this.order);
+
+            // Updating
+            this.setValue(index);
+            this.$emit('trigger-event', { name: 'change', event: { value: index } });
         },
     },
 };
