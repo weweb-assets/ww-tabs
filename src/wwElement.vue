@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 export default {
     props: {
         content: { type: Object, required: true },
@@ -58,15 +59,16 @@ export default {
     },
     emits: ['update:content', 'trigger-event', 'update:sidepanel-content'],
     setup(props) {
+        const nbOfTabs = computed(() => props.content.tabsList.length);
         const initialValue =
-            props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, this.nbOfTabs - 1));
+            props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1));
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
             props.uid,
             'currentTab',
             initialValue
         );
 
-        return { variableValue, setValue };
+        return { variableValue, setValue, nbOfTabs };
     },
     data() {
         return {
@@ -81,9 +83,6 @@ export default {
             /* wwEditor:end */
             // eslint-disable-next-line no-unreachable
             return false;
-        },
-        nbOfTabs() {
-            return this.content.tabsList.length;
         },
         cssVariables() {
             return {
