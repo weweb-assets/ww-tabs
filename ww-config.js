@@ -4,6 +4,7 @@ export default {
             en: 'Tabs',
             fr: 'Onglets',
         },
+        icon: 'fontawesome/regular/window-restore',
         menuOptions: {
             quick: {
                 label: {
