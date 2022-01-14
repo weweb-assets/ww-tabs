@@ -1,5 +1,5 @@
 <template>
-    <div class="tabs-object" :class="content.tabsPosition" :style="cssVariables">
+    <div class="tabs-object" :class="[content.tabsPosition, { editing: isEditing }]" :style="cssVariables">
         <div
             v-if="fixedToTop && content.tabFields.items"
             ref="fixedTabs"
@@ -43,6 +43,12 @@
                 </div>
             </div>
         </transition-group>
+
+        <!-- wwEditor:start -->
+        <div class="tabs-object__menu">
+            <wwEditorIcon small name="fontawesome/regular/window-restore" />
+        </div>
+        <!-- wwEditor:end -->
     </div>
 </template>
 
@@ -314,6 +320,40 @@ export default {
             }
         }
     }
+
+    /* wwEditor:start */
+    &.editing:hover {
+        > .tabs-object__menu {
+            opacity: 1;
+            pointer-events: all;
+        }
+    }
+    &__menu {
+        display: flex;
+        position: absolute;
+        top: 0px;
+        left: 5px;
+        transform: translate(-50%, -50%);
+        border-radius: 100%;
+        padding: var(--ww-spacing-01);
+        transition: opacity 0.2s ease;
+        z-index: 101;
+        cursor: pointer;
+        background-color: var(--ww-color-blue-500);
+        color: var(--ww-color-white);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+    }
+    /* wwEditor:end */
 }
 
 // FADE
