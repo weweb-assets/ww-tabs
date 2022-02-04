@@ -14,6 +14,9 @@ export default {
                 sections: ['tabIndex', 'position'],
             },
         },
+        bubble: {
+            icon: 'fontawesome/regular/window-restore',
+        },
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' } },
