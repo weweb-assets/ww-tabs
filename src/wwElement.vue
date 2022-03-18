@@ -60,13 +60,12 @@ export default {
     emits: ['update:content', 'trigger-event', 'update:sidepanel-content'],
     setup(props) {
         const nbOfTabs = computed(() => props.content.tabsList.length);
-        const initialValue =
-            props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1));
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
-            props.uid,
-            'currentTab',
-            initialValue
-        );
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'currentTab',
+            defaultValue: props.content.value,
+            sanitizer: value => value === undefined ? 0 : Math.max(0, Math.min(value, nbOfTabs.value - 1))
+        });
 
         return { variableValue, setValue, nbOfTabs };
     },
@@ -107,8 +106,7 @@ export default {
         },
         currentTabIndex: {
             get() {
-                const index = this.variableValue;
-                return Math.max(0, Math.min(index, this.nbOfTabs - 1));
+                return this.variableValue;
             },
             set(index) {
                 // Secure index range
@@ -120,8 +118,10 @@ export default {
                 this.handleTransition(this.order);
 
                 // Updating
-                this.setValue(index);
-                this.$emit('trigger-event', { name: 'change', event: { value: index } });
+                const { newValue, hasChanged } = this.setValue(index);
+                if (hasChanged) {
+                    this.$emit('trigger-event', { name: 'change', event: { value: newValue } });
+                }
             },
         },
     },
@@ -137,11 +137,11 @@ export default {
         },
         /* wwEditor:end */
         'content.value'(value) {
-            // Secure index range
-            const index = Math.max(0, Math.min(value, this.nbOfTabs - 1));
-            if (index === this.currentTabIndex) return;
-            this.setValue(index);
-            this.$emit('trigger-event', { name: 'initValueChange', event: { value: index } });
+            const { newValue, hasChanged } = this.setValue(value);
+            if (hasChanged) {
+                this.$emit('trigger-event', { name: 'initValueChange', event: { value: newValue } });
+            }
+            
         },
     },
     methods: {
