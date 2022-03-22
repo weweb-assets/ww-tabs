@@ -64,7 +64,7 @@ export default {
             uid: props.uid,
             name: 'currentTab',
             defaultValue: props.content.value,
-            sanitizer: value => value === undefined ? 0 : Math.max(0, Math.min(value, nbOfTabs.value - 1))
+            sanitizer: value => isNaN(value) ? 0 : value
         });
 
         return { variableValue, setValue, nbOfTabs };
@@ -106,7 +106,8 @@ export default {
         },
         currentTabIndex: {
             get() {
-                return this.variableValue;
+                const index = this.variableValue;
+                return Math.max(0, Math.min(index, this.nbOfTabs - 1));
             },
             set(index) {
                 // Secure index range
