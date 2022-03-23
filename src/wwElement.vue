@@ -171,7 +171,7 @@ export default {
                     const tabsContent = [...this.content.tabsContent];
                     let newElement;
                     if (tabsContent[index - 1]) {
-                        newElement = await wwLib.cloneElement(
+                        newElement = await wwLib.wwObjectHelper.cloneElement(
                             tabsContent[index - 1].uid,
                             this.wwFrontState.sectionId,
                             'New tab content'
@@ -207,7 +207,7 @@ export default {
                     const tabsHeader = [...this.content.tabsHeader];
                     let newElement;
                     if (tabsHeader[index - 1]) {
-                        newElement = await wwLib.cloneElement(
+                        newElement = await wwLib.wwObjectHelper.cloneElement(
                             tabsHeader[index - 1].uid,
                             this.wwFrontState.sectionId,
                             'New tab header'
