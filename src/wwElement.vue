@@ -20,9 +20,7 @@
         <wwLayout :path="`tabsContent`" class="tabs-content" disable-drag-drop @update:list="onTabsContentUpdate">
             <template #default="{ item, index }">
                 <wwLayoutItem>
-                    <transition :name="activeTransition">
-                        <wwElement v-if="currentTabIndex === index" :key="index" v-bind="item" />
-                    </transition>
+                    <wwElement v-if="currentTabIndex === index" :key="index" v-bind="item" />
                 </wwLayoutItem>
             </template>
         </wwLayout>
@@ -53,12 +51,6 @@ export default {
 
         return { variableValue, setValue, nbOfTabs };
     },
-    data() {
-        return {
-            order: null,
-            activeTransition: 'fade',
-        };
-    },
     computed: {
         isEditing() {
             /* wwEditor:start */
@@ -81,10 +73,6 @@ export default {
                 // Secure index range
                 index = Math.max(0, Math.min(index, this.nbOfTabs - 1));
                 if (index === this.currentTabIndex) return;
-
-                // Transition
-                this.order = index > this.currentTabIndex ? 'after' : 'before';
-                this.handleTransition(this.order);
 
                 // Updating
                 this.setValue(index);
@@ -236,24 +224,6 @@ export default {
             }
             /* wwEditor:end */
         },
-        handleTransition(order) {
-            switch (this.content.transition) {
-                case 'fade':
-                    this.activeTransition = 'fade';
-                    break;
-                case 'none':
-                    this.activeTransition = '';
-                    break;
-                case 'fadeTopBottom':
-                    this.activeTransition = order === 'after' ? 'fadeTop' : 'fadeBottom';
-                    break;
-                case 'fadeLeftRight':
-                    this.activeTransition = order === 'after' ? 'fadeLeft' : 'fadeRight';
-                    break;
-                default:
-                    this.activeTransition = 'fade';
-            }
-        },
     },
 };
 </script>
@@ -291,76 +261,5 @@ export default {
             flex-direction: column;
         }
     }
-}
-
-// FADE
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity var(--tab-transition-duration);
-}
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-
-// FADE TOP
-
-.fadeTop-enter-active,
-.fadeTop-leave-active {
-    transition: all var(--tab-transition-duration);
-}
-.fadeTop-enter {
-    opacity: 0;
-    transform: translateY(8px);
-}
-.fadeTop-leave-to {
-    opacity: 0;
-    transform: translateY(-8px);
-}
-
-// FADE BOTTOM
-
-.fadeBottom-enter-active,
-.fadeBottom-leave-active {
-    transition: all var(--tab-transition-duration);
-}
-.fadeBottom-enter {
-    opacity: 0;
-    transform: translateY(-8px);
-}
-.fadeBottom-leave-to {
-    opacity: 0;
-    transform: translateY(8px);
-}
-
-// FADE LEFT
-
-.fadeLeft-enter-active,
-.fadeLeft-leave-active {
-    transition: all var(--tab-transition-duration);
-}
-.fadeLeft-enter {
-    opacity: 0;
-    transform: translateX(8px);
-}
-.fadeLeft-leave-to {
-    opacity: 0;
-    transform: translateX(-8px);
-}
-
-// FADE RIGHT
-
-.fadeRight-enter-active,
-.fadeRight-leave-active {
-    transition: all var(--tab-transition-duration);
-}
-.fadeRight-enter {
-    opacity: 0;
-    transform: translateX(-8px);
-}
-.fadeRight-leave-to {
-    opacity: 0;
-    transform: translateX(8px);
 }
 </style>

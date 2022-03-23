@@ -55,29 +55,6 @@ export default {
             responsive: true,
             defaultValue: 'top',
         },
-        transition: {
-            label: { en: 'Transition', fr: 'Transition' },
-            type: 'TextSelect',
-            options: {
-                options: [
-                    { value: 'none', label: { en: 'None', fr: 'Aucune' } },
-                    { value: 'fade', label: { en: 'Fade', fr: 'Fade' } },
-                    { value: 'fadeTopBottom', label: { en: 'Fade top / bottom', fr: 'Fade top / bottom' } },
-                    { value: 'fadeLeftRight', label: { en: 'Fade right / left', fr: 'Fade right / left' } },
-                ],
-            },
-            defaultValue: 'fade',
-        },
-        transitionDuration: {
-            type: 'Number',
-            label: { en: 'Transition duration', fr: 'Durée de la transition' },
-            options: {
-                min: 0,
-                max: 5,
-                step: 0.1,
-            },
-            defaultValue: 0.4,
-        },
         tabsContent: {
             hidden: true,
             defaultValue: [{ isWwObject: true, type: 'ww-flexbox' }],
