@@ -164,15 +164,15 @@ export default {
             this.currentTabIndex = index;
         },
         /* wwEditor:end */
-        async onTabsHeaderUpdate({ type, index, fromIndex }) {
+        async onTabsHeaderUpdate({ type, index }) {
             /* wwEditor:start */
             switch (type) {
                 case 'add': {
                     const tabsContent = [...this.content.tabsContent];
                     let newElement;
-                    if (this.fromIndex) {
+                    if (tabsContent[index - 1]) {
                         newElement = await wwLib.cloneElement(
-                            tabsContent[fromIndex].uid,
+                            tabsContent[index - 1].uid,
                             this.wwFrontState.sectionId,
                             'New tab content'
                         );
@@ -200,15 +200,15 @@ export default {
             }
             /* wwEditor:end */
         },
-        async onTabsContentUpdate({ type, index, fromIndex }) {
+        async onTabsContentUpdate({ type, index }) {
             /* wwEditor:start */
             switch (type) {
                 case 'add': {
                     const tabsHeader = [...this.content.tabsHeader];
                     let newElement;
-                    if (this.fromIndex) {
+                    if (tabsHeader[index - 1]) {
                         newElement = await wwLib.cloneElement(
-                            tabsHeader[fromIndex].uid,
+                            tabsHeader[index - 1].uid,
                             this.wwFrontState.sectionId,
                             'New tab header'
                         );
