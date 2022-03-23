@@ -1,47 +1,30 @@
 <template>
-    <div class="tabs-object" :class="[content.tabsPosition, { editing: isEditing }]" :style="cssVariables">
-        <div
-            v-if="fixedToTop && content.tabFields.items"
-            ref="fixedTabs"
-            class="tabs-container fixedToTop"
+    <div class="ww-tabs" :class="[content.tabsPosition, { editing: isEditing }]" :style="cssVariables">
+        <wwLayout
+            :path="`tabsHeader`"
+            disable-drag-drop
+            class="tabs-list"
             :class="content.tabsPosition"
-            :style="cssTabsFixedPosition"
+            @update:list="onTabsHeaderUpdate"
         >
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
-                <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                        <template #default="{ item }">
-                            <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                            </wwLayoutItem>
-                        </template>
-                    </wwLayout>
-                </div>
-            </div>
-        </div>
-        <div v-if="content.tabsList && !fixedToTop" class="tabs-container" :class="content.tabsPosition">
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
-                <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                        <template #default="{ item }">
-                            <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                            </wwLayoutItem>
-                        </template>
-                    </wwLayout>
-                </div>
-            </div>
-        </div>
-        <transition-group :name="activeTransition" mode="out-in">
-            <div v-for="index in nbOfTabs" :key="index">
-                <div v-if="currentTabIndex === index - 1" class="tab-content">
-                    <wwLayout
-                        class="layout -layout"
-                        :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${index - 1}]`"
+            <template #default="{ item, index }">
+                <wwLayoutItem>
+                    <wwElement
+                        v-bind="item"
+                        :states="index === currentTabIndex ? ['active'] : []"
+                        @click="currentTabIndex = index"
                     />
-                </div>
-            </div>
+                </wwLayoutItem>
+            </template>
+        </wwLayout>
+        <transition-group :name="activeTransition" mode="out-in">
+            <wwLayout :path="`tabsContent`" class="tabs-content" disable-drag-drop @update:list="onTabsContentUpdate">
+                <template #default="{ item, index }">
+                    <wwLayoutItem>
+                        <wwElement v-if="currentTabIndex === index" :key="index" v-bind="item" />
+                    </wwLayoutItem>
+                </template>
+            </wwLayout>
         </transition-group>
     </div>
 </template>
@@ -59,7 +42,7 @@ export default {
     },
     emits: ['update:content', 'trigger-event', 'update:sidepanel-content'],
     setup(props) {
-        const nbOfTabs = computed(() => props.content.tabsList.length);
+        const nbOfTabs = computed(() => props.content.tabsHeader.length);
         const initialValue =
             props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1));
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
@@ -86,24 +69,8 @@ export default {
         },
         cssVariables() {
             return {
-                '--tab-transition-duration': this.content.transitionDuration + 's',
+                '--tab-transition-duration': `${this.content.transitionDuration}s`,
             };
-        },
-        fixedToTop() {
-            return this.content.tabsPosition === 'custom';
-        },
-        cssTabsFixedPosition() {
-            return {
-                '--tab-leftRight-position': this.content.leftRightPosition,
-                '--tab-topBottom-position': this.content.topBottomPosition,
-            };
-        },
-        getSublayoutHeight() {
-            const elHeight = wwLib.getFrontDocument().querySelectorAll('.tabs-sublayout-container');
-            if (elHeight && elHeight.length && elHeight[this.currentTabIndex]) {
-                return `${elHeight[this.currentTabIndex].offsetHeight}px`;
-            }
-            return '24px';
         },
         currentTabIndex: {
             get() {
@@ -147,40 +114,128 @@ export default {
     methods: {
         /* wwEditor:start */
         async addTab() {
-            const tabsList = [...this.content.tabsList];
+            const tabsHeader = [...this.content.tabsHeader];
             const tabsContent = [...this.content.tabsContent];
 
-            if (tabsList.length === 0) {
-                tabsList.push([]);
-                tabsContent.push([]);
+            if (tabsHeader.length === 0) {
+                tabsHeader.push(
+                    await wwLib.createElement('ww-flexbox', {}, { name: 'New tab' }, this.wwFrontState.sectionId)
+                );
+                tabsContent.push(
+                    await wwLib.createElement(
+                        'ww-flexbox',
+                        {},
+                        { name: 'New tab content' },
+                        this.wwFrontState.sectionId
+                    )
+                );
             } else {
-                if (tabsList && tabsList.length) {
-                    const tab = [];
-                    tabsList[tabsList.length - 1].forEach(async el => {
-                        tab.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
-                    });
-                    tabsList.push(tab);
+                if (tabsHeader && tabsHeader.length) {
+                    tabsHeader.push(
+                        await wwLib.wwObjectHelper.cloneElement(
+                            tabsHeader[tabsHeader.length - 1].uid,
+                            this.wwFrontState.sectionId,
+                            'New tab header'
+                        )
+                    );
                 }
                 if (tabsContent && tabsContent.length) {
-                    const content = [];
-                    tabsContent[tabsContent.length - 1].forEach(async el => {
-                        content.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
-                    });
-                    tabsContent.push(content);
+                    tabsContent.push(
+                        await wwLib.wwObjectHelper.cloneElement(
+                            tabsContent[tabsContent.length - 1].uid,
+                            this.wwFrontState.sectionId,
+                            'New tab content'
+                        )
+                    );
                 }
             }
 
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsHeader, tabsContent });
         },
         removeTab(index) {
-            const tabsList = [...this.content.tabsList];
+            const tabsHeader = [...this.content.tabsHeader];
             const tabsContent = [...this.content.tabsContent];
-            tabsList.splice(index, 1);
+            tabsHeader.splice(index, 1);
             tabsContent.splice(index, 1);
 
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsHeader, tabsContent });
+        },
+        onTabSelected(uid, index) {
+            this.currentTabIndex = index;
         },
         /* wwEditor:end */
+        async onTabsHeaderUpdate({ type, index, fromIndex }) {
+            /* wwEditor:start */
+            switch (type) {
+                case 'add': {
+                    const tabsContent = [...this.content.tabsContent];
+                    let newElement;
+                    if (this.fromIndex) {
+                        newElement = await wwLib.cloneElement(
+                            tabsContent[fromIndex].uid,
+                            this.wwFrontState.sectionId,
+                            'New tab content'
+                        );
+                    } else {
+                        newElement = await wwLib.createElement(
+                            'ww-flexbox',
+                            {},
+                            { name: 'New tab content' },
+                            this.wwFrontState.sectionId
+                        );
+                    }
+                    tabsContent.splice(index, 0, newElement);
+                    this.$emit('update:content', { tabsContent });
+                    break;
+                }
+                case 'remove': {
+                    const tabsContent = [...this.content.tabsContent];
+                    tabsContent.splice(index, 1);
+                    this.$emit('update:content', { tabsContent });
+                    break;
+                }
+                case 'move': {
+                    break;
+                }
+            }
+            /* wwEditor:end */
+        },
+        async onTabsContentUpdate({ type, index, fromIndex }) {
+            /* wwEditor:start */
+            switch (type) {
+                case 'add': {
+                    const tabsHeader = [...this.content.tabsHeader];
+                    let newElement;
+                    if (this.fromIndex) {
+                        newElement = await wwLib.cloneElement(
+                            tabsHeader[fromIndex].uid,
+                            this.wwFrontState.sectionId,
+                            'New tab header'
+                        );
+                    } else {
+                        newElement = await wwLib.createElement(
+                            'ww-flexbox',
+                            {},
+                            { name: 'New tab content' },
+                            this.wwFrontState.sectionId
+                        );
+                    }
+                    tabsHeader.splice(index, 0, newElement);
+                    this.$emit('update:content', { tabsHeader });
+                    break;
+                }
+                case 'remove': {
+                    const tabsHeader = [...this.content.tabsHeader];
+                    tabsHeader.splice(index, 1);
+                    this.$emit('update:content', { tabsHeader });
+                    break;
+                }
+                case 'move': {
+                    break;
+                }
+            }
+            /* wwEditor:end */
+        },
         handleTransition(order) {
             switch (this.content.transition) {
                 case 'fade':
@@ -204,19 +259,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tabs-object {
+.ww-tabs {
     --tab-transition-duration: 0.5s;
-    --tab-leftRight-position: 30%;
-    --tab-topBottom-position: -50%;
-
-    position: relative;
-    min-width: 100px;
-    min-height: 100px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    overflow: visible;
-
     &.top {
         flex-direction: column;
     }
@@ -229,89 +275,20 @@ export default {
     &.right {
         flex-direction: row-reverse;
     }
-
-    .tab-content {
-        .layout {
-            flex-direction: column;
-            min-width: 200px;
-        }
-    }
-
-    .tabs-container {
-        z-index: 1;
+    .tabs-content {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        position: relative;
-        width: 100%;
-        min-width: 390px;
-
-        @media only screen and (max-width: 400px) {
-            min-width: auto;
+        flex-direction: column;
+        flex: 1;
+    }
+    .tabs-list {
+        display: flex;
+        &.top,
+        &.bottom {
+            justify-content: center;
         }
-
-        &.fixedToTop {
-            width: 100vw;
-            z-index: 9999999;
-            position: absolute;
-            top: var(--tab-topBottom-position);
-            left: var(--tab-leftRight-position);
-            transform: translateX(-50%);
-
-            @media only screen and (max-width: 420px) {
-                left: calc(var(--tab-leftRight-position) - 11%);
-            }
-        }
-
-        &.left {
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
+        &.left,
         &.right {
             flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .layout-container {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-
-            .layout-sublayout {
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-
-                .layout {
-                    flex-direction: column;
-                    width: fit-content;
-                    height: fit-content;
-                    min-width: 80px;
-
-                    &:hover {
-                        cursor: pointer;
-                    }
-                }
-
-                .sublayout {
-                    flex-direction: column;
-                }
-            }
-        }
-
-        .tab-dropzone-container {
-            width: 100%;
-            height: 100%;
-            padding: 10px 10px;
-
-            .tab_dropzone {
-                width: 100px;
-                height: 100px;
-            }
         }
     }
 }

@@ -28,10 +28,10 @@ export default {
             type: 'Tabs',
             editorOnly: true,
             options: content => ({
-                labels: content.tabsList.map((_, index) => ({
+                labels: content.tabsHeader.map((_, index) => ({
                     label: `Tab ${index}`,
                 })),
-                nbTabs: content.tabsList.length,
+                nbTabs: content.tabsHeader.length,
                 add: 'addTab',
                 remove: 'removeTab',
             }),
@@ -50,35 +50,10 @@ export default {
                     { value: 'bottom', label: 'Bottom' },
                     { value: 'left', label: 'Left' },
                     { value: 'right', label: 'Right' },
-                    { value: 'custom', label: 'Custom' },
                 ],
             },
             responsive: true,
             defaultValue: 'top',
-        },
-        leftRightPosition: {
-            hidden: content => content.tabsPosition === 'custom',
-            label: {
-                en: 'Left/Right position',
-                fr: 'Left/Right position',
-            },
-            type: 'Length',
-            options: {
-                unitChoices: [{ value: '%', label: '%', min: -100, max: 100 }],
-            },
-            defaultValue: '30%',
-        },
-        topBottomPosition: {
-            hidden: content => content.tabsPosition === 'custom',
-            label: {
-                en: 'Top/Bottom position',
-                fr: 'Top/Bottom position',
-            },
-            type: 'Length',
-            options: {
-                unitChoices: [{ value: '%', label: '%', min: -100, max: 100 }],
-            },
-            defaultValue: '-50%',
         },
         transition: {
             label: { en: 'Transition', fr: 'Transition' },
@@ -105,11 +80,21 @@ export default {
         },
         tabsContent: {
             hidden: true,
-            defaultValue: [],
+            defaultValue: [{ isWwObject: true, type: 'ww-flexbox' }],
+            navigator: {
+                layout: true,
+                label: 'Content',
+                onSelected: 'onTabSelected',
+            },
         },
-        tabsList: {
+        tabsHeader: {
             hidden: true,
-            defaultValue: [],
+            defaultValue: [{ isWwObject: true, type: 'ww-flexbox' }],
+            navigator: {
+                layout: true,
+                label: 'Headers',
+                onSelected: 'onTabSelected',
+            },
         },
         value: {
             label: {
@@ -118,7 +103,7 @@ export default {
             type: 'Number',
             options: content => ({
                 min: 0,
-                max: Math.max(0, content.tabsList.length - 1),
+                max: Math.max(0, content.tabsHeader.length - 1),
             }),
             section: 'settings',
             bindable: true,
