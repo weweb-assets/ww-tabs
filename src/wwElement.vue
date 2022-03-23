@@ -17,15 +17,19 @@
                 </wwLayoutItem>
             </template>
         </wwLayout>
-        <transition-group :name="activeTransition" mode="out-in">
-            <wwLayout :path="`tabsContent`" class="tabs-content" disable-drag-drop @update:list="onTabsContentUpdate">
-                <template #default="{ item, index }">
-                    <wwLayoutItem>
-                        <wwElement v-if="currentTabIndex === index" :key="index" v-bind="item" />
-                    </wwLayoutItem>
-                </template>
-            </wwLayout>
-        </transition-group>
+        <wwLayout
+            :path="`tabsContent`"
+            class="tabs-content"
+            disable-drag-drop
+            :transition="{ name: activeTransition, mode: 'out-in' }"
+            @update:list="onTabsContentUpdate"
+        >
+            <template #default="{ item, index }">
+                <wwLayoutItem>
+                    <wwElement v-if="currentTabIndex === index" :key="index" v-bind="item" />
+                </wwLayoutItem>
+            </template>
+        </wwLayout>
     </div>
 </template>
 
