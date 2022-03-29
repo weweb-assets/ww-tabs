@@ -62,11 +62,12 @@ export default {
         const nbOfTabs = computed(() => props.content.tabsList.length);
         const initialValue =
             props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1));
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
-            props.uid,
-            'currentTab',
-            initialValue
-        );
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'currentTab',
+            type: 'number',
+            defaultValue: initialValue
+        });
 
         return { variableValue, setValue, nbOfTabs };
     },
