@@ -18,7 +18,7 @@ export default {
             icon: 'fontawesome/regular/window-restore',
         },
         navigator: {
-            groups: ['headers', 'contents'],
+            groups: ['Headers', 'Contents'],
         },
     },
     triggerEvents: [
