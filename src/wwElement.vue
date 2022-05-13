@@ -298,6 +298,7 @@ export default {
 
 .tab-contents {
     position: relative;
+    flex: 1;
 }
 // FADE
 

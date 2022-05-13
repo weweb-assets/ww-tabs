@@ -17,6 +17,9 @@ export default {
         bubble: {
             icon: 'fontawesome/regular/window-restore',
         },
+        navigator: {
+            groups: ['Headers', 'Contents'],
+        },
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' } },
@@ -160,13 +163,19 @@ export default {
             },
             defaultValue: 0.4,
         },
-        tabsContent: {
-            hidden: true,
-            defaultValue: [],
-        },
         tabsList: {
             hidden: true,
             defaultValue: [],
+            navigator: {
+                group: 'Headers',
+            },
+        },
+        tabsContent: {
+            hidden: true,
+            defaultValue: [],
+            navigator: {
+                group: 'Contents',
+            },
         },
         value: {
             label: {
