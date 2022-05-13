@@ -1,11 +1,11 @@
 <template>
     <div class="tabs-object" :class="[content.tabsPosition, { editing: isEditing }]" :style="cssVariables">
         <div
-            v-if="fixedToTop && content.tabFields.items"
-            ref="fixedTabs"
-            class="tabs-container fixedToTop"
+            v-if="content.tabsList"
+            class="tabs-container"
             :class="content.tabsPosition"
-            :style="cssTabsFixedPosition"
+            :style="tabsStyle"
+            ww-responsive="tabs-list"
         >
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
                 <div class="layout-sublayout">
@@ -19,30 +19,19 @@
                 </div>
             </div>
         </div>
-        <div v-if="content.tabsList && !fixedToTop" class="tabs-container" :class="content.tabsPosition">
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
-                <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                        <template #default="{ item }">
-                            <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                            </wwLayoutItem>
-                        </template>
-                    </wwLayout>
-                </div>
-            </div>
+        <div class="tab-contents">
+            <transition-group :name="activeTransition" mode="out-in" :tag="div">
+                <template v-for="index in nbOfTabs">
+                    <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
+                        <wwLayout
+                            class="layout -layout"
+                            :class="{ isEditing: isEditing }"
+                            :path="`tabsContent[${index - 1}]`"
+                        />
+                    </div>
+                </template>
+            </transition-group>
         </div>
-        <transition-group :name="activeTransition" mode="out-in">
-            <div v-for="index in nbOfTabs" :key="index">
-                <div v-if="currentTabIndex === index - 1" class="tab-content">
-                    <wwLayout
-                        class="layout -layout"
-                        :class="{ isEditing: isEditing }"
-                        :path="`tabsContent[${index - 1}]`"
-                    />
-                </div>
-            </div>
-        </transition-group>
     </div>
 </template>
 
@@ -66,7 +55,7 @@ export default {
             uid: props.uid,
             name: 'currentTab',
             type: 'number',
-            defaultValue: initialValue
+            defaultValue: initialValue,
         });
 
         return { variableValue, setValue, nbOfTabs };
@@ -90,21 +79,19 @@ export default {
                 '--tab-transition-duration': this.content.transitionDuration + 's',
             };
         },
-        fixedToTop() {
-            return this.content.tabsPosition === 'custom';
-        },
-        cssTabsFixedPosition() {
-            return {
-                '--tab-leftRight-position': this.content.leftRightPosition,
-                '--tab-topBottom-position': this.content.topBottomPosition,
-            };
-        },
         getSublayoutHeight() {
             const elHeight = wwLib.getFrontDocument().querySelectorAll('.tabs-sublayout-container');
             if (elHeight && elHeight.length && elHeight[this.currentTabIndex]) {
                 return `${elHeight[this.currentTabIndex].offsetHeight}px`;
             }
             return '24px';
+        },
+        tabsStyle() {
+            const isHorizontal = this.content.tabsPosition === 'top' || this.content.tabsPosition === 'bottom';
+            return {
+                justifyContent: isHorizontal ? this.content.horizontalAlignment : this.content.verticalAlignment,
+                alignItems: !isHorizontal ? this.content.horizontalAlignment : this.content.verticalAlignment,
+            };
         },
         currentTabIndex: {
             get() {
@@ -224,6 +211,7 @@ export default {
     &.bottom {
         flex-direction: column-reverse;
     }
+
     &.left {
         flex-direction: row;
     }
@@ -253,27 +241,18 @@ export default {
             min-width: auto;
         }
 
-        &.fixedToTop {
-            width: 100vw;
-            z-index: 9999999;
-            position: absolute;
-            top: var(--tab-topBottom-position);
-            left: var(--tab-leftRight-position);
-            transform: translateX(-50%);
-
-            @media only screen and (max-width: 420px) {
-                left: calc(var(--tab-leftRight-position) - 11%);
-            }
-        }
-
         &.left {
             flex-direction: column;
             align-items: flex-end;
+            width: auto;
+            min-width: 10px;
         }
 
         &.right {
             flex-direction: column;
             align-items: flex-start;
+            width: auto;
+            min-width: 10px;
         }
 
         .layout-container {
@@ -317,15 +296,25 @@ export default {
     }
 }
 
+.tab-contents {
+    position: relative;
+    flex: 1;
+}
 // FADE
 
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity var(--tab-transition-duration);
 }
-.fade-enter,
+.fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+.fade-leave-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 // FADE TOP
@@ -334,13 +323,19 @@ export default {
 .fadeTop-leave-active {
     transition: all var(--tab-transition-duration);
 }
-.fadeTop-enter {
+.fadeTop-enter-from {
     opacity: 0;
     transform: translateY(8px);
 }
 .fadeTop-leave-to {
     opacity: 0;
     transform: translateY(-8px);
+}
+.fadeTop-leave-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 // FADE BOTTOM
@@ -349,13 +344,19 @@ export default {
 .fadeBottom-leave-active {
     transition: all var(--tab-transition-duration);
 }
-.fadeBottom-enter {
+.fadeBottom-enter-from {
     opacity: 0;
     transform: translateY(-8px);
 }
 .fadeBottom-leave-to {
     opacity: 0;
     transform: translateY(8px);
+}
+.fadeBottom-leave-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 // FADE LEFT
@@ -364,13 +365,19 @@ export default {
 .fadeLeft-leave-active {
     transition: all var(--tab-transition-duration);
 }
-.fadeLeft-enter {
+.fadeLeft-enter-from {
     opacity: 0;
     transform: translateX(8px);
 }
 .fadeLeft-leave-to {
     opacity: 0;
     transform: translateX(-8px);
+}
+.fadeLeft-leave-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 // FADE RIGHT
@@ -379,12 +386,18 @@ export default {
 .fadeRight-leave-active {
     transition: all var(--tab-transition-duration);
 }
-.fadeRight-enter {
+.fadeRight-enter-from {
     opacity: 0;
     transform: translateX(-8px);
 }
 .fadeRight-leave-to {
     opacity: 0;
     transform: translateX(8px);
+}
+.fadeRight-leave-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 </style>
