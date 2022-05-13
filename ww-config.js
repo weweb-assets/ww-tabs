@@ -50,35 +50,92 @@ export default {
                     { value: 'bottom', label: 'Bottom' },
                     { value: 'left', label: 'Left' },
                     { value: 'right', label: 'Right' },
-                    { value: 'custom', label: 'Custom' },
                 ],
             },
             responsive: true,
             defaultValue: 'top',
         },
-        leftRightPosition: {
-            hidden: content => content.tabsPosition === 'custom',
+        horizontalAlignment: {
             label: {
-                en: 'Left/Right position',
-                fr: 'Left/Right position',
+                en: 'Hor. Align.',
             },
-            type: 'Length',
-            options: {
-                unitChoices: [{ value: '%', label: '%', min: -100, max: 100 }],
+            type: 'TextRadioGroup',
+            options: content => {
+                if (content.tabsPosition === 'top' || content.tabsPosition === 'bottom') {
+                    return {
+                        choices: [
+                            { value: 'flex-start', title: { en: 'Start', fr: 'Début' }, icon: 'align-x-start' },
+                            { value: 'center', title: { en: 'Center', fr: 'Milieu' }, icon: 'align-x-center' },
+                            { value: 'flex-end', title: { en: 'End', fr: 'Fin' }, icon: 'align-x-end' },
+                            {
+                                value: 'space-around',
+                                title: { en: 'Space around', fr: 'Space around' },
+                                icon: 'align-x-space-around',
+                            },
+                            {
+                                value: 'space-between',
+                                title: { en: 'Space between', fr: 'Space between' },
+                                icon: 'align-x-space-between',
+                            },
+                        ],
+                    };
+                } else {
+                    return {
+                        choices: [
+                            { value: 'start', title: { en: 'Start', fr: 'Début' }, icon: 'align-left' },
+                            { value: 'center', title: { en: 'Center', fr: 'Milieu' }, icon: 'align-center' },
+                            { value: 'end', title: { en: 'End', fr: 'Fin' }, icon: 'align-right' },
+                        ],
+                    };
+                }
             },
-            defaultValue: '30%',
-        },
-        topBottomPosition: {
-            hidden: content => content.tabsPosition === 'custom',
+            responsive: true,
+            defaultValue: 'center',
+        }, //align-left
+        verticalAlignment: {
             label: {
-                en: 'Top/Bottom position',
-                fr: 'Top/Bottom position',
+                en: 'Vert. Align',
             },
-            type: 'Length',
-            options: {
-                unitChoices: [{ value: '%', label: '%', min: -100, max: 100 }],
+            type: 'TextRadioGroup',
+            options: content => {
+                if (content.tabsPosition === 'top' || content.tabsPosition === 'bottom') {
+                    return {
+                        choices: [
+                            {
+                                value: 'start',
+                                title: { en: 'Start', fr: 'Début' },
+                                icon: 'align-top',
+                            },
+                            { value: 'center', title: { en: 'Center', fr: 'Milieu' }, icon: 'align-middle' },
+                            { value: 'end', title: { en: 'End', fr: 'Fin' }, icon: 'align-bottom' },
+                        ],
+                    };
+                } else {
+                    return {
+                        choices: [
+                            {
+                                value: 'flex-start',
+                                title: { en: 'Start', fr: 'Début' },
+                                icon: 'align-x-start-vertical',
+                            },
+                            { value: 'center', title: { en: 'Center', fr: 'Milieu' }, icon: 'align-x-center-vertical' },
+                            { value: 'flex-end', title: { en: 'End', fr: 'Fin' }, icon: 'align-x-end-vertical' },
+                            {
+                                value: 'space-around',
+                                title: { en: 'Space around', fr: 'Space around' },
+                                icon: 'align-x-space-around-vertical',
+                            },
+                            {
+                                value: 'space-between',
+                                title: { en: 'Space between', fr: 'Space between' },
+                                icon: 'align-x-space-between-vertical',
+                            },
+                        ],
+                    };
+                }
             },
-            defaultValue: '-50%',
+            responsive: true,
+            defaultValue: 'center',
         },
         transition: {
             label: { en: 'Transition', fr: 'Transition' },
