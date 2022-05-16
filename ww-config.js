@@ -5,15 +5,6 @@ export default {
             fr: 'Onglets',
         },
         icon: 'fontawesome/regular/window-restore',
-        menuOptions: {
-            quick: {
-                label: {
-                    en: 'Edit tabs',
-                    fr: 'Edit tabs',
-                },
-                sections: ['tabIndex', 'position'],
-            },
-        },
         bubble: {
             icon: 'fontawesome/regular/window-restore',
         },
