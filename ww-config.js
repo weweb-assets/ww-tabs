@@ -91,7 +91,6 @@ export default {
             responsive: true,
             defaultValue: 'center',
         },
-        //align-left
         verticalAlignment: {
             label: {
                 en: 'Vert. Align',
