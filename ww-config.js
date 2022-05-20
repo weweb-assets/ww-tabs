@@ -5,21 +5,17 @@ export default {
             fr: 'Onglets',
         },
         icon: 'fontawesome/regular/window-restore',
-        menuOptions: {
-            quick: {
-                label: {
-                    en: 'Edit tabs',
-                    fr: 'Edit tabs',
-                },
-                sections: ['tabIndex', 'position'],
-            },
-        },
         bubble: {
             icon: 'fontawesome/regular/window-restore',
         },
         navigator: {
             groups: ['Headers', 'Contents'],
         },
+        customStylePropertiesOrder: [
+            'tabsPosition',
+            ['horizontalAlignment', 'verticalAlignment'],
+            ['transition', 'transitionDuration'],
+        ],
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' } },
@@ -94,7 +90,8 @@ export default {
             },
             responsive: true,
             defaultValue: 'center',
-        }, //align-left
+        },
+        //align-left
         verticalAlignment: {
             label: {
                 en: 'Vert. Align',
