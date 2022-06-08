@@ -12,7 +12,7 @@
                     <wwElement
                         v-bind="item"
                         :states="index === currentTabIndex ? ['active'] : []"
-                        @click="currentTabIndex = index"
+                        @click="isEditing ? () => {} : (currentTabIndex = index)"
                     />
                 </wwLayoutItem>
             </template>
@@ -107,7 +107,7 @@ export default {
 
             if (tabsHeader.length === 0) {
                 tabsHeader.push(
-                    await wwLib.createElement('ww-flexbox', {}, { name: 'New tab' }, this.wwFrontState.sectionId)
+                    await wwLib.createElement('ww-flexbox', {}, { name: 'New tab header' }, this.wwFrontState.sectionId)
                 );
                 tabsContent.push(
                     await wwLib.createElement(

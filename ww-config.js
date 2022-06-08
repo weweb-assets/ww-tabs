@@ -60,14 +60,14 @@ export default {
         },
         tabsContent: {
             hidden: true,
-            defaultValue: [{ isWwObject: true, type: 'ww-flexbox' }],
+            defaultValue: [{ isWwObject: true, type: 'ww-flexbox', state: { name: 'Content 1' } }],
             navigator: {
                 group: 'Contents',
             },
         },
         tabsHeader: {
             hidden: true,
-            defaultValue: [{ isWwObject: true, type: 'ww-flexbox' }],
+            defaultValue: [{ isWwObject: true, type: 'ww-flexbox', state: { name: 'Header 1' } }],
             navigator: {
                 group: 'Headers',
             },
