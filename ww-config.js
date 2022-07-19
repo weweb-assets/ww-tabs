@@ -11,6 +11,11 @@ export default {
         navigator: {
             groups: ['Headers', 'Contents'],
         },
+        customStylePropertiesOrder: [
+            'tabsPosition',
+            ['horizontalAlignment', 'verticalAlignment'],
+            ['transition', 'transitionDuration'],
+        ],
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' } },
@@ -85,7 +90,7 @@ export default {
             },
             responsive: true,
             defaultValue: 'center',
-        }, //align-left
+        },
         verticalAlignment: {
             label: {
                 en: 'Vert. Align',
