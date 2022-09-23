@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="tab-contents">
-            <transition-group :name="activeTransition" mode="out-in" :tag="div">
+            <transition-group :name="activeTransition" mode="out-in" tag="div">
                 <template v-for="index in nbOfTabs">
                     <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
                         <wwLayout
