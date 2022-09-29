@@ -145,14 +145,26 @@ export default {
                 if (tabsList && tabsList.length) {
                     const tab = [];
                     tabsList[tabsList.length - 1].forEach(async el => {
-                        tab.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
+                        tab.push(
+                            await wwLib.wwObjectHelper.cloneElement(
+                                el.uid,
+                                this.wwFrontState.sectionId,
+                                `Header ${tabsList.length + 1}`
+                            )
+                        );
                     });
                     tabsList.push(tab);
                 }
                 if (tabsContent && tabsContent.length) {
                     const content = [];
                     tabsContent[tabsContent.length - 1].forEach(async el => {
-                        content.push(await wwLib.wwObjectHelper.cloneElement(el.uid, this.wwFrontState.sectionId));
+                        content.push(
+                            await wwLib.wwObjectHelper.cloneElement(
+                                el.uid,
+                                this.wwFrontState.sectionId,
+                                `Content ${tabsContent.length + 1}`
+                            )
+                        );
                     });
                     tabsContent.push(content);
                 }
