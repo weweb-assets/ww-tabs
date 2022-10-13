@@ -1,12 +1,6 @@
 <template>
     <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
-        <div
-            v-if="content.tabsList"
-            class="tabs-container"
-            :class="content.tabsPosition"
-            :style="tabsContainerStyle"
-            ww-responsive="tabs-container"
-        >
+        <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
                 <div class="layout-sublayout">
                     <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
@@ -112,6 +106,12 @@ export default {
                 style['align-items'] = 'flex-end';
             } else if (this.content.tabsPosition === 'right') {
                 style['align-items'] = 'flex-start';
+            }
+
+            if (this.content.tabsPosition === 'left' || this.content.tabsPosition === 'right') {
+                style['flex-direction'] = 'column';
+                style['width'] = 'auto';
+                style['min-width'] = '10px';
             }
 
             return style;
@@ -260,13 +260,6 @@ export default {
 
         @media only screen and (max-width: 400px) {
             min-width: auto;
-        }
-
-        &.left,
-        &.right {
-            flex-direction: column;
-            width: auto;
-            min-width: 10px;
         }
 
         .layout-container {
