@@ -1,11 +1,11 @@
 <template>
-    <div class="tabs-object" :class="[content.tabsPosition, { editing: isEditing }]" :style="cssVariables">
+    <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
         <div
             v-if="content.tabsList"
             class="tabs-container"
             :class="content.tabsPosition"
-            :style="tabsStyle"
-            ww-responsive="tabs-list"
+            :style="tabsContainerStyle"
+            ww-responsive="tabs-container"
         >
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
                 <div class="layout-sublayout">
@@ -74,10 +74,24 @@ export default {
             // eslint-disable-next-line no-unreachable
             return false;
         },
-        cssVariables() {
-            return {
-                '--tab-transition-duration': this.content.transitionDuration + 's',
-            };
+        tabsObjectStyle() {
+            const style = { '--tab-transition-duration': this.content.transitionDuration + 's' };
+
+            switch (this.content.tabsPosition) {
+                case 'top':
+                    style['flex-direction'] = 'column';
+                    break;
+                case 'bottom':
+                    style['flex-direction'] = 'column-reverse';
+                    break;
+                case 'left':
+                    style['flex-direction'] = 'row';
+                    break;
+                case 'right':
+                    style['flex-direction'] = 'row-reverse';
+                    break;
+            }
+            return style;
         },
         getSublayoutHeight() {
             const elHeight = wwLib.getFrontDocument().querySelectorAll('.tabs-sublayout-container');
@@ -86,12 +100,21 @@ export default {
             }
             return '24px';
         },
-        tabsStyle() {
+        tabsContainerStyle() {
             const isHorizontal = this.content.tabsPosition === 'top' || this.content.tabsPosition === 'bottom';
-            return {
+
+            const style = {
                 justifyContent: isHorizontal ? this.content.horizontalAlignment : this.content.verticalAlignment,
                 alignItems: !isHorizontal ? this.content.horizontalAlignment : this.content.verticalAlignment,
             };
+
+            if (this.content.tabsPosition === 'left') {
+                style['align-items'] = 'flex-end';
+            } else if (this.content.tabsPosition === 'right') {
+                style['align-items'] = 'flex-start';
+            }
+
+            return style;
         },
         currentTabIndex: {
             get() {
@@ -217,20 +240,6 @@ export default {
     justify-content: center;
     overflow: visible;
 
-    &.top {
-        flex-direction: column;
-    }
-    &.bottom {
-        flex-direction: column-reverse;
-    }
-
-    &.left {
-        flex-direction: row;
-    }
-    &.right {
-        flex-direction: row-reverse;
-    }
-
     .tab-content {
         .layout {
             flex-direction: column;
@@ -253,16 +262,9 @@ export default {
             min-width: auto;
         }
 
-        &.left {
-            flex-direction: column;
-            align-items: flex-end;
-            width: auto;
-            min-width: 10px;
-        }
-
+        &.left,
         &.right {
             flex-direction: column;
-            align-items: flex-start;
             width: auto;
             min-width: 10px;
         }
