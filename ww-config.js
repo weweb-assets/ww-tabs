@@ -4,9 +4,9 @@ export default {
             en: 'Tabs',
             fr: 'Onglets',
         },
-        icon: 'fontawesome/regular/window-restore',
+        icon: 'collection',
         bubble: {
-            icon: 'fontawesome/regular/window-restore',
+            icon: 'collection',
         },
         navigator: {
             groups: ['Headers', 'Contents'],
