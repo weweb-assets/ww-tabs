@@ -13,6 +13,7 @@ export default {
                 sections: ['tabIndex', 'position'],
             },
         },
+        deprecated: 'Use tabs from the Elements panel instead of this one.',
     },
     properties: {
         tabIndex: {
