@@ -1,8 +1,8 @@
 export default {
     editor: {
         label: {
-            en: 'Tabs (legacy)',
-            fr: 'Onglets (legacy)',
+            en: 'Tabs',
+            fr: 'Onglets',
         },
         menuOptions: {
             quick: {
