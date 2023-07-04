@@ -52,6 +52,9 @@ export default {
                 ],
             },
             responsive: true,
+            states: true,
+            bindable: true,
+            classes: true,
             defaultValue: 'top',
         },
         horizontalAlignment: {
@@ -88,7 +91,9 @@ export default {
                     };
                 }
             },
-            responsive: true,
+            states: true,
+            bindable: true,
+            classes: true,
             defaultValue: 'center',
         },
         verticalAlignment: {
@@ -133,7 +138,9 @@ export default {
                     };
                 }
             },
-            responsive: true,
+            states: true,
+            bindable: true,
+            classes: true,
             defaultValue: 'center',
         },
         transition: {
@@ -148,6 +155,9 @@ export default {
                 ],
             },
             defaultValue: 'fade',
+            states: true,
+            bindable: true,
+            classes: true,
         },
         transitionDuration: {
             type: 'Number',
@@ -158,6 +168,9 @@ export default {
                 step: 0.1,
             },
             defaultValue: 0.4,
+            states: true,
+            bindable: true,
+            classes: true,
         },
         tabsList: {
             hidden: true,
