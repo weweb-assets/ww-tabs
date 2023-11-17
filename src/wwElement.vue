@@ -51,9 +51,18 @@ export default {
             defaultValue: computed(() => props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1))),
         });
 
+        /* wwEditor:start */
         const { cloneElement } = wwLib.useCreateElement();
+        /* wwEditor:end */
 
-        return { variableValue, setValue, nbOfTabs, cloneElement };
+        return { 
+            variableValue, 
+            setValue, 
+            nbOfTabs, 
+            /* wwEditor:start */
+            cloneElement 
+            /* wwEditor:end */
+        };
     },
     data() {
         return {
