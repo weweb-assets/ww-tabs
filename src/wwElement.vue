@@ -51,7 +51,18 @@ export default {
             defaultValue: computed(() => props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1))),
         });
 
-        return { variableValue, setValue, nbOfTabs };
+        /* wwEditor:start */
+        const { cloneElement } = wwLib.useCreateElement();
+        /* wwEditor:end */
+
+        return { 
+            variableValue, 
+            setValue, 
+            nbOfTabs, 
+            /* wwEditor:start */
+            cloneElement 
+            /* wwEditor:end */
+        };
     },
     data() {
         return {
@@ -167,26 +178,16 @@ export default {
                 if (tabsList && tabsList.length) {
                     const tab = [];
                     tabsList[tabsList.length - 1].forEach(async el => {
-                        tab.push(
-                            await wwLib.wwObjectHelper.cloneElement(
-                                el.uid,
-                                this.wwFrontState.sectionId,
-                                `Header ${tabsList.length + 1}`
-                            )
-                        );
+                        const { uid } = await this.cloneElement(el.uid, { name : `Header ${tabsList.length + 1}`} );
+                        tab.push(uid);
                     });
                     tabsList.push(tab);
                 }
                 if (tabsContent && tabsContent.length) {
                     const content = [];
                     tabsContent[tabsContent.length - 1].forEach(async el => {
-                        content.push(
-                            await wwLib.wwObjectHelper.cloneElement(
-                                el.uid,
-                                this.wwFrontState.sectionId,
-                                `Content ${tabsContent.length + 1}`
-                            )
-                        );
+                        const { uid } = await this.cloneElement(el.uid, { name : `Content ${tabsContent.length + 1}`} );
+                        content.push(uid);
                     });
                     tabsContent.push(content);
                 }
