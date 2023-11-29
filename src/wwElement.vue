@@ -55,12 +55,12 @@ export default {
         const { cloneElement } = wwLib.useCreateElement();
         /* wwEditor:end */
 
-        return { 
-            variableValue, 
-            setValue, 
-            nbOfTabs, 
+        return {
+            variableValue,
+            setValue,
+            nbOfTabs,
             /* wwEditor:start */
-            cloneElement 
+            cloneElement
             /* wwEditor:end */
         };
     },
@@ -111,12 +111,6 @@ export default {
                 justifyContent: isHorizontal ? this.content.horizontalAlignment : this.content.verticalAlignment,
                 alignItems: !isHorizontal ? this.content.horizontalAlignment : this.content.verticalAlignment,
             };
-
-            if (this.content.tabsPosition === 'left') {
-                style['align-items'] = 'flex-end';
-            } else if (this.content.tabsPosition === 'right') {
-                style['align-items'] = 'flex-start';
-            }
 
             if (this.content.tabsPosition === 'left' || this.content.tabsPosition === 'right') {
                 style['flex-direction'] = 'column';
@@ -178,7 +172,7 @@ export default {
                 if (tabsList && tabsList.length) {
                     const tab = [];
                     tabsList[tabsList.length - 1].forEach(async el => {
-                        const { uid } = await this.cloneElement(el.uid, { name : `Header ${tabsList.length + 1}`} );
+                        const { uid } = await this.cloneElement(el.uid, { name: `Header ${tabsList.length + 1}` });
                         tab.push(uid);
                     });
                     tabsList.push(tab);
@@ -186,7 +180,7 @@ export default {
                 if (tabsContent && tabsContent.length) {
                     const content = [];
                     tabsContent[tabsContent.length - 1].forEach(async el => {
-                        const { uid } = await this.cloneElement(el.uid, { name : `Content ${tabsContent.length + 1}`} );
+                        const { uid } = await this.cloneElement(el.uid, { name: `Content ${tabsContent.length + 1}` });
                         content.push(uid);
                     });
                     tabsContent.push(content);
@@ -307,16 +301,19 @@ export default {
     position: relative;
     flex: 1;
 }
+
 // FADE
 
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity var(--tab-transition-duration);
 }
+
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
 }
+
 .fade-leave-active {
     position: absolute;
     top: 0;
@@ -330,14 +327,17 @@ export default {
 .fadeTop-leave-active {
     transition: all var(--tab-transition-duration);
 }
+
 .fadeTop-enter-from {
     opacity: 0;
     transform: translateY(8px);
 }
+
 .fadeTop-leave-to {
     opacity: 0;
     transform: translateY(-8px);
 }
+
 .fadeTop-leave-active {
     position: absolute;
     top: 0;
@@ -351,14 +351,17 @@ export default {
 .fadeBottom-leave-active {
     transition: all var(--tab-transition-duration);
 }
+
 .fadeBottom-enter-from {
     opacity: 0;
     transform: translateY(-8px);
 }
+
 .fadeBottom-leave-to {
     opacity: 0;
     transform: translateY(8px);
 }
+
 .fadeBottom-leave-active {
     position: absolute;
     top: 0;
@@ -372,14 +375,17 @@ export default {
 .fadeLeft-leave-active {
     transition: all var(--tab-transition-duration);
 }
+
 .fadeLeft-enter-from {
     opacity: 0;
     transform: translateX(8px);
 }
+
 .fadeLeft-leave-to {
     opacity: 0;
     transform: translateX(-8px);
 }
+
 .fadeLeft-leave-active {
     position: absolute;
     top: 0;
@@ -393,18 +399,20 @@ export default {
 .fadeRight-leave-active {
     transition: all var(--tab-transition-duration);
 }
+
 .fadeRight-enter-from {
     opacity: 0;
     transform: translateX(-8px);
 }
+
 .fadeRight-leave-to {
     opacity: 0;
     transform: translateX(8px);
 }
+
 .fadeRight-leave-active {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-}
-</style>
+}</style>
