@@ -48,7 +48,9 @@ export default {
             uid: props.uid,
             name: 'currentTab',
             type: 'number',
-            defaultValue: computed(() => props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1))),
+            defaultValue: computed(() =>
+                props.content.value === undefined ? 0 : Math.max(0, Math.min(props.content.value, nbOfTabs.value - 1))
+            ),
         });
 
         /* wwEditor:start */
@@ -60,7 +62,7 @@ export default {
             setValue,
             nbOfTabs,
             /* wwEditor:start */
-            cloneElement
+            cloneElement,
             /* wwEditor:end */
         };
     },
@@ -227,12 +229,8 @@ export default {
     --tab-topBottom-position: -50%;
 
     position: relative;
-    min-width: 100px;
-    min-height: 100px;
-    display: flex;
     flex-direction: column;
     justify-content: center;
-    overflow: visible;
 
     .tab-content {
         .layout {
@@ -415,4 +413,5 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
-}</style>
+}
+</style>
