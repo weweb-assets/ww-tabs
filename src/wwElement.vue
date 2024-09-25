@@ -54,7 +54,7 @@ export default {
         });
 
         /* wwEditor:start */
-        const { cloneElement } = wwLib.useCreateElement();
+        const { cloneElement } = wwLib.wwElement.useCreate();
         /* wwEditor:end */
 
         return {
