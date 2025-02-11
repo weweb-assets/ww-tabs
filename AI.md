@@ -31,7 +31,7 @@ Children:
 - tabsContent: any[][] - Components for tab content areas
 
 Example:
-{"tag":"ww-tabs","props":{"default":{"transition":"fade","tabsPosition":"top","verticalAlignment":"center","transitionDuration":0.4,"horizontalAlignment":"flex-start"}},"children":{"tabsList":[[{"tag":"ww-flexbox","styles":{"default":{"margin":"0 12px 12px 0","padding":"12px","borderRadius":"8px"}}}]],"tabsContent":[[{"tag":"ww-flexbox","styles":{"default":{"border":"1px solid #E6E6E6","height":"198px","width":"400px"}}}]]}}
+{"tag":"ww-tabs","props":{"default":{"transition":"fade","tabsPosition":"top","verticalAlignment":"center","transitionDuration":0.4,"horizontalAlignment":"flex-start"}},"children":{"tabsList":[[{"tag":"ww-div","styles":{"default":{"margin":"0 12px 12px 0","padding":"12px","borderRadius":"8px"}}}]],"tabsContent":[[{"tag":"ww-div","styles":{"default":{"border":"1px solid #E6E6E6","height":"198px","width":"400px"}}}]]}}
 
 Note: Specify width and height for each tabContent or it will feel broken.
 
