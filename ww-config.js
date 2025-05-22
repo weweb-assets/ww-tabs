@@ -31,7 +31,8 @@ export default {
             editorOnly: true,
             options: content => ({
                 labels: content.tabsList.map((_, index) => ({
-                    label: `Tab ${index}`,
+                    label: content.tabLabels?.[index] || `Tab ${index}`,
+                    customizable: true,
                 })),
                 nbTabs: content.tabsList.length,
                 add: 'addTab',
@@ -39,6 +40,7 @@ export default {
                 orderable: true,
                 moveUp: 'moveTabUp',
                 moveDown: 'moveTabDown',
+                updateLabel: 'updateTabLabel',
             }),
             section: 'settings',
             defaultValue: 0,
@@ -191,6 +193,10 @@ export default {
             navigator: {
                 group: 'Contents',
             },
+        },
+        tabLabels: {
+            hidden: true,
+            defaultValue: [],
         },
         value: {
             label: {

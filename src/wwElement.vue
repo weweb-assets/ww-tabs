@@ -194,32 +194,57 @@ export default {
         removeTab(index) {
             const tabsList = [...this.content.tabsList];
             const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
+            
             tabsList.splice(index, 1);
             tabsContent.splice(index, 1);
+            if (tabLabels.length > index) {
+                tabLabels.splice(index, 1);
+            }
 
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
         },
         moveTabUp(index) {
             if (index <= 0) return;
             
             const tabsList = [...this.content.tabsList];
             const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
             
             [tabsList[index], tabsList[index - 1]] = [tabsList[index - 1], tabsList[index]];
             [tabsContent[index], tabsContent[index - 1]] = [tabsContent[index - 1], tabsContent[index]];
+            if (tabLabels.length > index) {
+                [tabLabels[index], tabLabels[index - 1]] = [tabLabels[index - 1], tabLabels[index]];
+            }
             
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
         },
         moveTabDown(index) {
             if (index >= this.content.tabsList.length - 1) return;
             
             const tabsList = [...this.content.tabsList];
             const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
             
             [tabsList[index], tabsList[index + 1]] = [tabsList[index + 1], tabsList[index]];
             [tabsContent[index], tabsContent[index + 1]] = [tabsContent[index + 1], tabsContent[index]];
+            if (tabLabels.length > index + 1) {
+                [tabLabels[index], tabLabels[index + 1]] = [tabLabels[index + 1], tabLabels[index]];
+            }
             
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
+        },
+        updateTabLabel({ index, label }) {
+            const tabLabels = [...(this.content.tabLabels || [])];
+            
+            // Ensure the array is long enough
+            while (tabLabels.length <= index) {
+                tabLabels.push(null);
+            }
+            
+            tabLabels[index] = label;
+            
+            this.$emit('update:content', { tabLabels });
         },
         /* wwEditor:end */
         handleTransition(order) {
