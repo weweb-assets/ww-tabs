@@ -199,6 +199,28 @@ export default {
 
             this.$emit('update:content', { tabsList, tabsContent });
         },
+        moveTabUp(index) {
+            if (index <= 0) return;
+            
+            const tabsList = [...this.content.tabsList];
+            const tabsContent = [...this.content.tabsContent];
+            
+            [tabsList[index], tabsList[index - 1]] = [tabsList[index - 1], tabsList[index]];
+            [tabsContent[index], tabsContent[index - 1]] = [tabsContent[index - 1], tabsContent[index]];
+            
+            this.$emit('update:content', { tabsList, tabsContent });
+        },
+        moveTabDown(index) {
+            if (index >= this.content.tabsList.length - 1) return;
+            
+            const tabsList = [...this.content.tabsList];
+            const tabsContent = [...this.content.tabsContent];
+            
+            [tabsList[index], tabsList[index + 1]] = [tabsList[index + 1], tabsList[index]];
+            [tabsContent[index], tabsContent[index + 1]] = [tabsContent[index + 1], tabsContent[index]];
+            
+            this.$emit('update:content', { tabsList, tabsContent });
+        },
         /* wwEditor:end */
         handleTransition(order) {
             switch (this.content.transition) {
