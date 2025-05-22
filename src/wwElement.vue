@@ -2,26 +2,50 @@
     <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
         <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
             <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
-                <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                        <template #default="{ item }">
-                            <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                            </wwLayoutItem>
-                        </template>
-                    </wwLayout>
-                </div>
+                <wwLayoutItemContext 
+                    is-repeat 
+                    :index="index - 1" 
+                    :data="{ 
+                        tabIndex: index - 1, 
+                        tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                        isActive: index - 1 === currentTabIndex,
+                        totalTabs: nbOfTabs,
+                        tabPosition: content.tabsPosition
+                    }"
+                >
+                    <div class="layout-sublayout">
+                        <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
+                            <template #default="{ item }">
+                                <wwLayoutItem>
+                                    <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
+                                </wwLayoutItem>
+                            </template>
+                        </wwLayout>
+                    </div>
+                </wwLayoutItemContext>
             </div>
         </div>
         <div class="tab-contents">
             <transition-group :name="activeTransition" mode="out-in" tag="div">
                 <template v-for="index in nbOfTabs">
                     <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
-                        <wwLayout
-                            class="layout -layout"
-                            :class="{ isEditing: isEditing }"
-                            :path="`tabsContent[${index - 1}]`"
-                        />
+                        <wwLayoutItemContext 
+                            is-repeat 
+                            :index="index - 1" 
+                            :data="{ 
+                                tabIndex: index - 1, 
+                                tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                                isActive: true,
+                                totalTabs: nbOfTabs,
+                                tabPosition: content.tabsPosition
+                            }"
+                        >
+                            <wwLayout
+                                class="layout -layout"
+                                :class="{ isEditing: isEditing }"
+                                :path="`tabsContent[${index - 1}]`"
+                            />
+                        </wwLayoutItemContext>
                     </div>
                 </template>
             </transition-group>
