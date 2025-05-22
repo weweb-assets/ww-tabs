@@ -24,6 +24,7 @@ Interactive tabs component that enables users to switch between different conten
 - transition: 'none'|'fade'|'fadeTopBottom'|'fadeLeftRight' - Transition effect between tabs. Default: 'fade'
 - transitionDuration: number - Transition duration in seconds (0-5). Default: 0.4
 - value: number - Active tab index (0-based)
+- tabLabels: string[] - Array of custom tab labels (e.g. ["Users", "Settings", "Profile"]). Falls back to default "Tab 0", "Tab 1" etc. when not set
 
 ***Slots:***
 - tabsList: (array of arrays) - Components for tab headers. Each sub-array represents one tab's header content
