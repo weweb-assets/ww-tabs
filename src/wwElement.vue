@@ -73,8 +73,6 @@ export default {
             totalTabs: nbOfTabs.value,
             tabPosition: props.content.tabsPosition,
             tabLabels: props.content.tabLabels || [],
-            isActive: (tabIndex) => tabIndex === currentTabIndex.value,
-            getTabLabel: (tabIndex) => props.content.tabLabels?.[tabIndex] || `Tab ${tabIndex + 1}`
         }));
 
         const tabsMethods = {
@@ -124,28 +122,11 @@ The tabs component provides the following data and methods to child elements:
 - \`totalTabs\`: Number - Total number of tabs
 - \`tabPosition\`: String - Position of tabs ('top', 'bottom', 'left', 'right')
 - \`tabLabels\`: Array - Array of tab labels
-- \`isActive(tabIndex)\`: Function - Check if a specific tab is active
-- \`getTabLabel(tabIndex)\`: Function - Get the label for a specific tab
 
 ## Methods Available:
 - \`goToTab(index)\`: Switch to a specific tab by index
 - \`goToNextTab()\`: Switch to the next tab
 - \`goToPreviousTab()\`: Switch to the previous tab
-
-## Usage Examples:
-\`\`\`javascript
-// Access current tab in a binding
-$local.tabs.currentTabIndex
-
-// Check if tab is active
-$local.tabs.isActive(2)
-
-// Get tab label
-$local.tabs.getTabLabel(0)
-
-// Switch to tab programmatically
-$local.tabs.goToTab(1)
-\`\`\`
         `;
 
         wwLib.wwElement.useRegisterElementLocalContext('tabs', tabsData, tabsMethods, markdown);
