@@ -1,32 +1,52 @@
 <template>
-    <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
-        <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="switchToTab(index - 1)">
-                <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                        <template #default="{ item }">
-                            <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                            </wwLayoutItem>
-                        </template>
-                    </wwLayout>
+    <wwLocalContext localKey="tab" :data="globalTabData" :methods="globalTabMethods">
+        <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
+            <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
+                <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="switchToTab(index - 1)">
+                    <wwLocalContext 
+                        localKey="tabItem" 
+                        :data="{
+                            tabIndex: index - 1,
+                            tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                            isActive: index - 1 === currentTabIndex
+                        }"
+                    >
+                        <div class="layout-sublayout">
+                            <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
+                                <template #default="{ item }">
+                                    <wwLayoutItem>
+                                        <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
+                                    </wwLayoutItem>
+                                </template>
+                            </wwLayout>
+                        </div>
+                    </wwLocalContext>
                 </div>
             </div>
+            <div class="tab-contents">
+                <transition-group :name="activeTransition" mode="out-in" tag="div">
+                    <template v-for="index in nbOfTabs">
+                        <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
+                            <wwLocalContext 
+                                localKey="tabItem" 
+                                :data="{
+                                    tabIndex: index - 1,
+                                    tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                                    isActive: true
+                                }"
+                            >
+                                <wwLayout
+                                    class="layout -layout"
+                                    :class="{ isEditing: isEditing }"
+                                    :path="`tabsContent[${index - 1}]`"
+                                />
+                            </wwLocalContext>
+                        </div>
+                    </template>
+                </transition-group>
+            </div>
         </div>
-        <div class="tab-contents">
-            <transition-group :name="activeTransition" mode="out-in" tag="div">
-                <template v-for="index in nbOfTabs">
-                    <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
-                        <wwLayout
-                            class="layout -layout"
-                            :class="{ isEditing: isEditing }"
-                            :path="`tabsContent[${index - 1}]`"
-                        />
-                    </div>
-                </template>
-            </transition-group>
-        </div>
-    </div>
+    </wwLocalContext>
 </template>
 
 <script>
@@ -67,69 +87,32 @@ export default {
             }
         });
 
-        // Register element local context
-        const tabsData = computed(() => ({
+        // Global tab context data (shared across all tabs)
+        const globalTabData = computed(() => ({
             currentTabIndex: currentTabIndex.value,
             totalTabs: nbOfTabs.value,
             tabPosition: props.content.tabsPosition,
             tabLabels: props.content.tabLabels || [],
         }));
 
-        const tabsMethods = {
-            goToTab: {
-                method: (index) => {
-                    setCurrentTabIndex(index);
-                },
-                editor: {
-                    label: 'Go to Tab',
-                    description: 'Switch to a specific tab by index',
-                    args: [{ name: 'index', type: 'number', description: 'Tab index (0-based)' }]
+        // Global tab methods
+        const globalTabMethods = {
+            goToTab: (index) => {
+                setCurrentTabIndex(index);
+            },
+            goToNextTab: () => {
+                const nextIndex = currentTabIndex.value + 1;
+                if (nextIndex < nbOfTabs.value) {
+                    setCurrentTabIndex(nextIndex);
                 }
             },
-            goToNextTab: {
-                method: () => {
-                    const nextIndex = currentTabIndex.value + 1;
-                    if (nextIndex < nbOfTabs.value) {
-                        setCurrentTabIndex(nextIndex);
-                    }
-                },
-                editor: {
-                    label: 'Go to Next Tab',
-                    description: 'Switch to the next tab if available'
-                }
-            },
-            goToPreviousTab: {
-                method: () => {
-                    const prevIndex = currentTabIndex.value - 1;
-                    if (prevIndex >= 0) {
-                        setCurrentTabIndex(prevIndex);
-                    }
-                },
-                editor: {
-                    label: 'Go to Previous Tab',
-                    description: 'Switch to the previous tab if available'
+            goToPreviousTab: () => {
+                const prevIndex = currentTabIndex.value - 1;
+                if (prevIndex >= 0) {
+                    setCurrentTabIndex(prevIndex);
                 }
             }
         };
-
-        const markdown = `
-# Tabs Local Context
-
-The tabs component provides the following data and methods to child elements:
-
-## Data Available:
-- \`currentTabIndex\`: Number - The currently active tab index (0-based)
-- \`totalTabs\`: Number - Total number of tabs
-- \`tabPosition\`: String - Position of tabs ('top', 'bottom', 'left', 'right')
-- \`tabLabels\`: Array - Array of tab labels
-
-## Methods Available:
-- \`goToTab(index)\`: Switch to a specific tab by index
-- \`goToNextTab()\`: Switch to the next tab
-- \`goToPreviousTab()\`: Switch to the previous tab
-        `;
-
-        wwLib.wwElement.useRegisterElementLocalContext('tabs', tabsData, tabsMethods, markdown);
 
         /* wwEditor:start */
         const { cloneElement } = wwLib.useCreateElement();
@@ -149,6 +132,8 @@ The tabs component provides the following data and methods to child elements:
             nbOfTabs,
             currentTabIndex,
             setCurrentTabIndex,
+            globalTabData,
+            globalTabMethods,
             /* wwEditor:start */
             cloneElement,
             /* wwEditor:end */
