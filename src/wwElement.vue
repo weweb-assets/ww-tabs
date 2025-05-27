@@ -1,6 +1,6 @@
 <template>
-    <wwLocalContext localKey="tab" :data="globalTabData" :methods="globalTabMethods">
-        <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
+    <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
+        <wwLocalContext localKey="tab" :data="globalTabData" :methods="globalTabMethods">
             <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
                 <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="switchToTab(index - 1)">
                     <wwLocalContext 
@@ -45,8 +45,8 @@
                     </template>
                 </transition-group>
             </div>
-        </div>
-    </wwLocalContext>
+        </wwLocalContext>
+    </div>
 </template>
 
 <script>
