@@ -1,51 +1,53 @@
 <template>
     <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
-        <wwLocalContext localKey="tab" :data="globalTabData" :methods="globalTabMethods">
-            <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
-                <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="switchToTab(index - 1)">
-                    <wwLocalContext 
-                        localKey="tabItem" 
-                        :data="{
-                            tabIndex: index - 1,
-                            tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
-                            isActive: index - 1 === currentTabIndex
-                        }"
-                    >
-                        <div class="layout-sublayout">
-                            <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                                <template #default="{ item }">
-                                    <wwLayoutItem>
-                                        <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                                    </wwLayoutItem>
-                                </template>
-                            </wwLayout>
-                        </div>
-                    </wwLocalContext>
-                </div>
+        <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="switchToTab(index - 1)">
+                <wwLocalContext 
+                    elementKey="tab" 
+                    :data="{
+                        tabIndex: index - 1,
+                        tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                        isActive: index - 1 === currentTabIndex,
+                        totalTabs: nbOfTabs,
+                        tabPosition: content.tabsPosition
+                    }"
+                >
+                    <div class="layout-sublayout">
+                        <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
+                            <template #default="{ item }">
+                                <wwLayoutItem>
+                                    <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
+                                </wwLayoutItem>
+                            </template>
+                        </wwLayout>
+                    </div>
+                </wwLocalContext>
             </div>
-            <div class="tab-contents">
-                <transition-group :name="activeTransition" mode="out-in" tag="div">
-                    <template v-for="index in nbOfTabs">
-                        <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
-                            <wwLocalContext 
-                                localKey="tabItem" 
-                                :data="{
-                                    tabIndex: index - 1,
-                                    tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
-                                    isActive: true
-                                }"
-                            >
-                                <wwLayout
-                                    class="layout -layout"
-                                    :class="{ isEditing: isEditing }"
-                                    :path="`tabsContent[${index - 1}]`"
-                                />
-                            </wwLocalContext>
-                        </div>
-                    </template>
-                </transition-group>
-            </div>
-        </wwLocalContext>
+        </div>
+        <div class="tab-contents">
+            <transition-group :name="activeTransition" mode="out-in" tag="div">
+                <template v-for="index in nbOfTabs">
+                    <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
+                        <wwLocalContext 
+                            elementKey="tab" 
+                            :data="{
+                                tabIndex: index - 1,
+                                tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                                isActive: true,
+                                totalTabs: nbOfTabs,
+                                tabPosition: content.tabsPosition
+                            }"
+                        >
+                            <wwLayout
+                                class="layout -layout"
+                                :class="{ isEditing: isEditing }"
+                                :path="`tabsContent[${index - 1}]`"
+                            />
+                        </wwLocalContext>
+                    </div>
+                </template>
+            </transition-group>
+        </div>
     </div>
 </template>
 
@@ -87,32 +89,6 @@ export default {
             }
         });
 
-        // Global tab context data (shared across all tabs)
-        const globalTabData = computed(() => ({
-            currentTabIndex: currentTabIndex.value,
-            totalTabs: nbOfTabs.value,
-            tabPosition: props.content.tabsPosition,
-            tabLabels: props.content.tabLabels || [],
-        }));
-
-        // Global tab methods
-        const globalTabMethods = {
-            goToTab: (index) => {
-                setCurrentTabIndex(index);
-            },
-            goToNextTab: () => {
-                const nextIndex = currentTabIndex.value + 1;
-                if (nextIndex < nbOfTabs.value) {
-                    setCurrentTabIndex(nextIndex);
-                }
-            },
-            goToPreviousTab: () => {
-                const prevIndex = currentTabIndex.value - 1;
-                if (prevIndex >= 0) {
-                    setCurrentTabIndex(prevIndex);
-                }
-            }
-        };
 
         /* wwEditor:start */
         const { cloneElement } = wwLib.useCreateElement();
@@ -132,8 +108,6 @@ export default {
             nbOfTabs,
             currentTabIndex,
             setCurrentTabIndex,
-            globalTabData,
-            globalTabMethods,
             /* wwEditor:start */
             cloneElement,
             /* wwEditor:end */

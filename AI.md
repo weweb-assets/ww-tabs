@@ -31,11 +31,11 @@ Interactive tabs component that enables users to switch between different conten
 - tabsContent: (array of arrays) - Components for tab content areas. Each sub-array represents one tab's content
 
 ***Context data (only accessible to this element and its children):***
-- context.local.data?.['tabIndex'] - Current tab index (0-based)
-- context.local.data?.['tabLabel'] - Current tab label
-- context.local.data?.['isActive'] - Whether the current tab is active
-- context.local.data?.['totalTabs'] - Total number of tabs
-- context.local.data?.['tabPosition'] - Tab position (top, bottom, left, right)
+- context.local.data?.['tab']?.['tabIndex'] - Current tab index (0-based)
+- context.local.data?.['tab']?.['tabLabel'] - Current tab label
+- context.local.data?.['tab']?.['isActive'] - Whether the current tab is active
+- context.local.data?.['tab']?.['totalTabs'] - Total number of tabs
+- context.local.data?.['tab']?.['tabPosition'] - Tab position (top, bottom, left, right)
 
 ***Exposed Variables:***
 - currentTab: Current active tab index (0-based). ***READ ONLY*** (path: variables['current_element_uid-currentTab'])
