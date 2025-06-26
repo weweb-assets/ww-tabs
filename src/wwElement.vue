@@ -206,10 +206,17 @@ export default {
         async addTab() {
             const tabsList = [...this.content.tabsList];
             const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
+
+            // Ensure tabLabels array has default labels for all existing tabs
+            while (tabLabels.length < tabsList.length) {
+                tabLabels.push(`Tab ${tabLabels.length + 1}`);
+            }
 
             if (tabsList.length === 0) {
                 tabsList.push([]);
                 tabsContent.push([]);
+                tabLabels.push(`Tab 1`);
             } else {
                 if (tabsList && tabsList.length) {
                     const tab = [];
@@ -227,9 +234,10 @@ export default {
                     });
                     tabsContent.push(content);
                 }
+                tabLabels.push(`Tab ${tabsList.length}`);
             }
 
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
         },
         removeTab(index) {
             const tabsList = [...this.content.tabsList];
