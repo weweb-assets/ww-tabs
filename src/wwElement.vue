@@ -251,11 +251,14 @@ export default {
             const tabsContent = [...this.content.tabsContent];
             const tabLabels = [...(this.content.tabLabels || [])];
             
+            // Ensure tabLabels array has default labels for all tabs
+            while (tabLabels.length < tabsList.length) {
+                tabLabels.push(`Tab ${tabLabels.length + 1}`);
+            }
+            
             [tabsList[index], tabsList[index - 1]] = [tabsList[index - 1], tabsList[index]];
             [tabsContent[index], tabsContent[index - 1]] = [tabsContent[index - 1], tabsContent[index]];
-            if (tabLabels.length > index) {
-                [tabLabels[index], tabLabels[index - 1]] = [tabLabels[index - 1], tabLabels[index]];
-            }
+            [tabLabels[index], tabLabels[index - 1]] = [tabLabels[index - 1], tabLabels[index]];
             
             this.$emit('update:content', { tabsList, tabsContent, tabLabels });
         },
@@ -266,11 +269,14 @@ export default {
             const tabsContent = [...this.content.tabsContent];
             const tabLabels = [...(this.content.tabLabels || [])];
             
+            // Ensure tabLabels array has default labels for all tabs
+            while (tabLabels.length < tabsList.length) {
+                tabLabels.push(`Tab ${tabLabels.length + 1}`);
+            }
+            
             [tabsList[index], tabsList[index + 1]] = [tabsList[index + 1], tabsList[index]];
             [tabsContent[index], tabsContent[index + 1]] = [tabsContent[index + 1], tabsContent[index]];
-            if (tabLabels.length > index + 1) {
-                [tabLabels[index], tabLabels[index + 1]] = [tabLabels[index + 1], tabLabels[index]];
-            }
+            [tabLabels[index], tabLabels[index + 1]] = [tabLabels[index + 1], tabLabels[index]];
             
             this.$emit('update:content', { tabsList, tabsContent, tabLabels });
         },
