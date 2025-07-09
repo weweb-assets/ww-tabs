@@ -1,27 +1,49 @@
 <template>
     <div class="tabs-object" :class="{ editing: isEditing }" :style="tabsObjectStyle" ww-responsive="tabs-object">
         <div v-if="content.tabsList" class="tabs-container" :style="tabsContainerStyle" ww-responsive="tabs-container">
-            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="currentTabIndex = index - 1">
-                <div class="layout-sublayout">
-                    <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
-                        <template #default="{ item }">
-                            <wwLayoutItem>
-                                <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
-                            </wwLayoutItem>
-                        </template>
-                    </wwLayout>
-                </div>
+            <div v-for="index in nbOfTabs" :key="index" class="layout-container" @click="switchToTab(index - 1)">
+                <wwLocalContext 
+                    elementKey="tab" 
+                    :data="{
+                        tabIndex: index - 1,
+                        tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                        isActive: index - 1 === currentTabIndex,
+                        totalTabs: nbOfTabs,
+                        tabPosition: content.tabsPosition
+                    }"
+                >
+                    <div class="layout-sublayout">
+                        <wwLayout class="layout -layout" :path="`tabsList[${index - 1}]`">
+                            <template #default="{ item }">
+                                <wwLayoutItem>
+                                    <wwElement v-bind="item" :states="index - 1 === currentTabIndex ? ['active'] : []" />
+                                </wwLayoutItem>
+                            </template>
+                        </wwLayout>
+                    </div>
+                </wwLocalContext>
             </div>
         </div>
         <div class="tab-contents">
             <transition-group :name="activeTransition" mode="out-in" tag="div">
                 <template v-for="index in nbOfTabs">
                     <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
-                        <wwLayout
-                            class="layout -layout"
-                            :class="{ isEditing: isEditing }"
-                            :path="`tabsContent[${index - 1}]`"
-                        />
+                        <wwLocalContext 
+                            elementKey="tab" 
+                            :data="{
+                                tabIndex: index - 1,
+                                tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
+                                isActive: true,
+                                totalTabs: nbOfTabs,
+                                tabPosition: content.tabsPosition
+                            }"
+                        >
+                            <wwLayout
+                                class="layout -layout"
+                                :class="{ isEditing: isEditing }"
+                                :path="`tabsContent[${index - 1}]`"
+                            />
+                        </wwLocalContext>
                     </div>
                 </template>
             </transition-group>
@@ -42,7 +64,7 @@ export default {
         uid: { type: String, required: true },
     },
     emits: ['update:content', 'trigger-event', 'update:sidepanel-content'],
-    setup(props) {
+    setup(props, { emit }) {
         const nbOfTabs = computed(() => props.content.tabsList.length);
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
@@ -53,14 +75,39 @@ export default {
             ),
         });
 
+        const currentTabIndex = computed({
+            get() {
+                const index = variableValue.value;
+                return Math.max(0, Math.min(index, nbOfTabs.value - 1));
+            },
+            set(index) {
+                // Secure index range
+                index = Math.max(0, Math.min(index, nbOfTabs.value - 1));
+                if (index === currentTabIndex.value) return;
+                setValue(index);
+                emit('trigger-event', { name: 'change', event: { value: index } });
+            }
+        });
+
+
         /* wwEditor:start */
         const { cloneElement } = wwLib.useCreateElement();
         /* wwEditor:end */
+
+        const setCurrentTabIndex = (index) => {
+            // Secure index range
+            index = Math.max(0, Math.min(index, nbOfTabs.value - 1));
+            if (index === currentTabIndex.value) return;
+            
+            setValue(index);
+        };
 
         return {
             variableValue,
             setValue,
             nbOfTabs,
+            currentTabIndex,
+            setCurrentTabIndex,
             /* wwEditor:start */
             cloneElement,
             /* wwEditor:end */
@@ -122,30 +169,11 @@ export default {
 
             return style;
         },
-        currentTabIndex: {
-            get() {
-                const index = this.variableValue;
-                return Math.max(0, Math.min(index, this.nbOfTabs - 1));
-            },
-            set(index) {
-                // Secure index range
-                index = Math.max(0, Math.min(index, this.nbOfTabs - 1));
-                if (index === this.currentTabIndex) return;
-
-                // Transition
-                this.order = index > this.currentTabIndex ? 'after' : 'before';
-                this.handleTransition(this.order);
-
-                // Updating
-                this.setValue(index);
-                this.$emit('trigger-event', { name: 'change', event: { value: index } });
-            },
-        },
     },
     watch: {
         /* wwEditor:start */
         'wwEditorState.sidepanelContent.tabIndex'(newIndex) {
-            this.currentTabIndex = newIndex;
+            this.switchToTab(newIndex);
         },
         currentTabIndex(value) {
             if (this.wwEditorState.sidepanelContent.tabIndex !== value) {
@@ -157,19 +185,38 @@ export default {
             // Secure index range
             const index = Math.max(0, Math.min(value, this.nbOfTabs - 1));
             if (index === this.currentTabIndex) return;
-            this.setValue(index);
+            this.currentTabIndex = index;
             this.$emit('trigger-event', { name: 'initValueChange', event: { value: index } });
         },
     },
     methods: {
+        switchToTab(index) {
+            // Secure index range
+            index = Math.max(0, Math.min(index, this.nbOfTabs - 1));
+            if (index === this.currentTabIndex) return;
+
+            // Transition
+            this.order = index > this.currentTabIndex ? 'after' : 'before';
+            this.handleTransition(this.order);
+
+            // Updating (event will be emitted by the setter)
+            this.currentTabIndex = index;
+        },
         /* wwEditor:start */
         async addTab() {
             const tabsList = [...this.content.tabsList];
             const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
+
+            // Ensure tabLabels array has default labels for all existing tabs
+            while (tabLabels.length < tabsList.length) {
+                tabLabels.push(`Tab ${tabLabels.length + 1}`);
+            }
 
             if (tabsList.length === 0) {
                 tabsList.push([]);
                 tabsContent.push([]);
+                tabLabels.push(`Tab 1`);
             } else {
                 if (tabsList && tabsList.length) {
                     const tab = [];
@@ -187,17 +234,71 @@ export default {
                     });
                     tabsContent.push(content);
                 }
+                tabLabels.push(`Tab ${tabsList.length}`);
             }
 
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
         },
         removeTab(index) {
             const tabsList = [...this.content.tabsList];
             const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
+            
             tabsList.splice(index, 1);
             tabsContent.splice(index, 1);
+            if (tabLabels.length > index) {
+                tabLabels.splice(index, 1);
+            }
 
-            this.$emit('update:content', { tabsList, tabsContent });
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
+        },
+        moveTabUp(index) {
+            if (index <= 0) return;
+            
+            const tabsList = [...this.content.tabsList];
+            const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
+            
+            // Ensure tabLabels array has default labels for all tabs
+            while (tabLabels.length < tabsList.length) {
+                tabLabels.push(`Tab ${tabLabels.length + 1}`);
+            }
+            
+            [tabsList[index], tabsList[index - 1]] = [tabsList[index - 1], tabsList[index]];
+            [tabsContent[index], tabsContent[index - 1]] = [tabsContent[index - 1], tabsContent[index]];
+            [tabLabels[index], tabLabels[index - 1]] = [tabLabels[index - 1], tabLabels[index]];
+            
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
+        },
+        moveTabDown(index) {
+            if (index >= this.content.tabsList.length - 1) return;
+            
+            const tabsList = [...this.content.tabsList];
+            const tabsContent = [...this.content.tabsContent];
+            const tabLabels = [...(this.content.tabLabels || [])];
+            
+            // Ensure tabLabels array has default labels for all tabs
+            while (tabLabels.length < tabsList.length) {
+                tabLabels.push(`Tab ${tabLabels.length + 1}`);
+            }
+            
+            [tabsList[index], tabsList[index + 1]] = [tabsList[index + 1], tabsList[index]];
+            [tabsContent[index], tabsContent[index + 1]] = [tabsContent[index + 1], tabsContent[index]];
+            [tabLabels[index], tabLabels[index + 1]] = [tabLabels[index + 1], tabLabels[index]];
+            
+            this.$emit('update:content', { tabsList, tabsContent, tabLabels });
+        },
+        updateTabLabel({ index, label }) {
+            const tabLabels = [...(this.content.tabLabels || [])];
+            
+            // Ensure the array is long enough
+            while (tabLabels.length <= index) {
+                tabLabels.push(null);
+            }
+            
+            tabLabels[index] = label;
+            
+            this.$emit('update:content', { tabLabels });
         },
         /* wwEditor:end */
         handleTransition(order) {
