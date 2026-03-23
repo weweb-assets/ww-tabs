@@ -77,7 +77,7 @@ export default {
         },
     ],
     triggerEvents: [
-        { name: 'change', label: { en: 'On change' }, event: { value: '' }, description: "Run when the value changes." },
+        { name: 'change', label: { en: 'On change' }, event: { value: '' }, description: "Run when the selected tab changes." },
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' }, description: "Run when the initial value changes." },
     ],
     properties: {
