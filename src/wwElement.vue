@@ -25,28 +25,27 @@
             </div>
         </div>
         <div class="tab-contents">
-            <transition-group :name="activeTransition" mode="out-in" tag="div">
-                <template v-for="index in nbOfTabs">
-                    <div v-if="currentTabIndex === index - 1" :key="index" class="tab-content">
-                        <wwLocalContext 
-                            elementKey="tab" 
-                            :data="{
-                                tabIndex: index - 1,
-                                tabLabel: content.tabLabels?.[index - 1] || `Tab ${index}`,
-                                isActive: true,
-                                totalTabs: nbOfTabs,
-                                tabPosition: content.tabsPosition
-                            }"
-                        >
-                            <wwLayout
-                                class="layout -layout"
-                                :class="{ isEditing: isEditing }"
-                                :path="`tabsContent[${index - 1}]`"
-                            />
-                        </wwLocalContext>
-                    </div>
-                </template>
+            <transition-group v-if="hasActiveTab" :name="activeTransition" mode="out-in" tag="div">
+                <div :key="currentTabIndex + 1" class="tab-content">
+                    <wwLocalContext
+                        elementKey="tab"
+                        :data="{
+                            tabIndex: currentTabIndex,
+                            tabLabel: content.tabLabels?.[currentTabIndex] || `Tab ${currentTabIndex + 1}`,
+                            isActive: true,
+                            totalTabs: nbOfTabs,
+                            tabPosition: content.tabsPosition,
+                        }"
+                    >
+                        <wwLayout
+                            class="layout -layout"
+                            :class="{ isEditing: isEditing }"
+                            :path="`tabsContent[${currentTabIndex}]`"
+                        />
+                    </wwLocalContext>
+                </div>
             </transition-group>
+            <div v-else></div>
         </div>
     </div>
 </template>
@@ -88,7 +87,9 @@ export default {
                 emit('trigger-event', { name: 'change', event: { value: index } });
             }
         });
-
+        const hasActiveTab = computed(
+            () => Number.isInteger(currentTabIndex.value) && currentTabIndex.value < nbOfTabs.value
+        );
 
         /* wwEditor:start */
         const { cloneElement } = wwLib.useCreateElement();
@@ -107,6 +108,7 @@ export default {
             setValue,
             nbOfTabs,
             currentTabIndex,
+            hasActiveTab,
             setCurrentTabIndex,
             /* wwEditor:start */
             cloneElement,
